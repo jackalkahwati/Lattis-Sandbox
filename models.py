@@ -1,4 +1,5 @@
 from extensions import db
+from datetime import datetime
 
 class Vehicle(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -11,6 +12,7 @@ class MaintenanceTask(db.Model):
     vehicle_id = db.Column(db.Integer, db.ForeignKey('vehicle.id'), nullable=False)
     description = db.Column(db.String(200), nullable=False)
     status = db.Column(db.String(20), nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
 class Station(db.Model):
     id = db.Column(db.Integer, primary_key=True)

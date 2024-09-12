@@ -1,6 +1,7 @@
 from flask import Flask, render_template, jsonify
+from flask_migrate import Migrate
 from extensions import db
-from api import fleet, maintenance, rebalancing, user, reporting, integration
+from api import fleet, maintenance, rebalancing, user, reporting, integration, future_modules
 import os
 
 def create_app():
@@ -11,6 +12,7 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
     db.init_app(app)
+    migrate = Migrate(app, db)
 
     # Register blueprints
     app.register_blueprint(fleet.bp)
@@ -19,6 +21,7 @@ def create_app():
     app.register_blueprint(user.bp)
     app.register_blueprint(reporting.bp)
     app.register_blueprint(integration.bp)
+    app.register_blueprint(future_modules.bp)
 
     @app.route('/')
     def index():

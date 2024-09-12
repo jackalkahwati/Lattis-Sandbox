@@ -15,6 +15,18 @@ author = "agent"
 task = "workflow.run"
 args = "Run Flask App"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Flask DB Migrate"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Flask DB Upgrade"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Flask DB Init"
+
 [[workflows.workflow]]
 name = "Run Flask App"
 author = "agent"
@@ -25,6 +37,42 @@ agentRequireRestartOnSave = false
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "python main.py"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "Flask DB Migrate"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "flask db migrate -m 'Initial migration'"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "Flask DB Upgrade"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "flask db upgrade"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "Flask DB Init"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "flask db init"
 waitForPort = 5000
 
 [deployment]

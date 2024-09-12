@@ -13,17 +13,22 @@
         <div class="api-section">
             <h2>Fleet Management</h2>
             <button id="getVehicles">Get Vehicles</button>
+            <button id="getFleetStatus">Get Fleet Status</button>
+            <button id="assignTask">Assign Task</button>
         </div>
 
         <div class="api-section">
             <h2>Maintenance & Repair</h2>
             <button id="getMaintenanceSchedule">Get Maintenance Schedule</button>
             <button id="createMaintenanceTask">Create Maintenance Task</button>
+            <button id="getPredictiveMaintenance">Get Predictive Maintenance</button>
         </div>
 
         <div class="api-section">
             <h2>Rebalancing & Optimization</h2>
             <button id="getStations">Get Stations</button>
+            <button id="scheduleRebalancing">Schedule Rebalancing</button>
+            <button id="getOptimizationSuggestions">Get Optimization Suggestions</button>
         </div>
 
         <div class="api-section">
@@ -35,12 +40,23 @@
         <div class="api-section">
             <h2>Data & Reporting</h2>
             <button id="getUsageReport">Get Usage Report</button>
+            <button id="getMaintenanceReport">Get Maintenance Report</button>
         </div>
 
         <div class="api-section">
             <h2>Integration</h2>
             <button id="ingestGBFSData">Ingest GBFS Data</button>
+            <button id="connectRepairTicket">Connect Repair Ticket</button>
         </div>
+
+        <div class="api-section">
+            <h2>Future-Ready Modules</h2>
+            <button id="setDynamicPricing">Set Dynamic Pricing</button>
+            <button id="defineGeofence">Define Geofence</button>
+        </div>
+
+        <h2>Error:</h2>
+        <pre id="error" class="error"></pre>
 
         <h2>Response:</h2>
         <pre id="response"></pre>
