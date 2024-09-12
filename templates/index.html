@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lattis API Sandbox</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Lattis API Sandbox</h1>
+        
+        <div class="api-section">
+            <h2>Fleet Management</h2>
+            <button id="getVehicles">Get Vehicles</button>
+        </div>
+
+        <div class="api-section">
+            <h2>Maintenance & Repair</h2>
+            <button id="getMaintenanceSchedule">Get Maintenance Schedule</button>
+            <button id="createMaintenanceTask">Create Maintenance Task</button>
+        </div>
+
+        <div class="api-section">
+            <h2>Rebalancing & Optimization</h2>
+            <button id="getStations">Get Stations</button>
+        </div>
+
+        <div class="api-section">
+            <h2>User & Access Management</h2>
+            <button id="manageAccess">Manage Access</button>
+            <button id="getUserActivity">Get User Activity</button>
+        </div>
+
+        <div class="api-section">
+            <h2>Data & Reporting</h2>
+            <button id="getUsageReport">Get Usage Report</button>
+        </div>
+
+        <div class="api-section">
+            <h2>Integration</h2>
+            <button id="ingestGBFSData">Ingest GBFS Data</button>
+        </div>
+
+        <h2>Response:</h2>
+        <pre id="response"></pre>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
