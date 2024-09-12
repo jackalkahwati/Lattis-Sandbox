@@ -1,0 +1,221 @@
+import React, { useState } from 'react';
+import { Search, User, Key, Map, Activity, Truck, Settings, Book, BarChart2, Code, PlayCircle } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+
+const APISandboxDashboard = () => {
+  const [activeTab, setActiveTab] = useState('API Testing');
+  const [selectedEndpoint, setSelectedEndpoint] = useState('');
+  const [vehicles, setVehicles] = useState([
+    { id: 1, x: 100, y: 150, status: 'active' },
+    { id: 2, x: 300, y: 200, status: 'maintenance' },
+    { id: 3, x: 200, y: 300, status: 'inactive' },
+    { id: 4, x: 400, y: 100, status: 'active' },
+  ]);
+
+  const navItems = [
+    { name: 'API Testing', icon: <Code className="mr-2" /> },
+    { name: 'Fleet Management', icon: <Truck className="mr-2" /> },
+    { name: 'Maintenance', icon: <Activity className="mr-2" /> },
+    { name: 'Rebalancing', icon: <Map className="mr-2" /> },
+    { name: 'Analytics', icon: <BarChart2 className="mr-2" /> },
+    { name: 'Documentation', icon: <Book className="mr-2" /> },
+  ];
+
+  const endpoints = [
+    { value: 'get-vehicles', label: 'GET /api/vehicles' },
+    { value: 'create-task', label: 'POST /api/tasks' },
+    { value: 'update-vehicle', label: 'PUT /api/vehicles/{id}' },
+    { value: 'get-stats', label: 'GET /api/stats' },
+  ];
+
+  const getVehicleColor = (status) => {
+    switch (status) {
+      case 'active': return '#22c55e';
+      case 'maintenance': return '#eab308';
+      case 'inactive': return '#ef4444';
+      default: return '#3b82f6';
+    }
+  };
+
+  const renderMap = () => (
+    <svg width="100%" height="100%" viewBox="0 0 1000 800">
+      {/* Background */}
+      <rect width="1000" height="800" fill="#e6e8e6" />
+      
+      {/* Water bodies */}
+      <path d="M0 600 Q 250 550, 500 600 T 1000 600 V 800 H 0 Z" fill="#a5d5f5" />
+      
+      {/* Main roads */}
+      <g stroke="#ffffff" strokeWidth="20">
+        <line x1="0" y1="200" x2="1000" y2="200" />
+        <line x1="0" y1="400" x2="1000" y2="400" />
+        <line x1="0" y1="600" x2="1000" y2="600" />
+        <line x1="200" y1="0" x2="200" y2="800" />
+        <line x1="500" y1="0" x2="500" y2="800" />
+        <line x1="800" y1="0" x2="800" y2="800" />
+      </g>
+      
+      {/* Secondary roads */}
+      <g stroke="#ffffff" strokeWidth="10" strokeDasharray="20,20">
+        <line x1="0" y1="100" x2="1000" y2="100" />
+        <line x1="0" y1="300" x2="1000" y2="300" />
+        <line x1="0" y1="500" x2="1000" y2="500" />
+        <line x1="0" y1="700" x2="1000" y2="700" />
+        <line x1="100" y1="0" x2="100" y2="800" />
+        <line x1="300" y1="0" x2="300" y2="800" />
+        <line x1="400" y1="0" x2="400" y2="800" />
+        <line x1="600" y1="0" x2="600" y2="800" />
+        <line x1="700" y1="0" x2="700" y2="800" />
+        <line x1="900" y1="0" x2="900" y2="800" />
+      </g>
+      
+      {/* Buildings */}
+      <g fill="#d1d5db">
+        <rect x="20" y="20" width="160" height="160" />
+        <rect x="220" y="20" width="100" height="80" />
+        <rect x="520" y="20" width="140" height="120" />
+        <rect x="820" y="20" width="160" height="160" />
+        <rect x="20" y="420" width="120" height="120" />
+        <rect x="220" y="420" width="180" height="80" />
+        <rect x="520" y="420" width="100" height="100" />
+        <rect x="820" y="420" width="140" height="140" />
+      </g>
+      
+      {/* Parks */}
+      <g fill="#86efac">
+        <circle cx="400" cy="300" r="80" />
+        <circle cx="700" cy="500" r="60" />
+        <rect x="50" y="220" width="100" height="160" rx="20" />
+      </g>
+      
+      {/* Vehicles */}
+      {vehicles.map((vehicle) => (
+        <g key={vehicle.id}>
+          <circle
+            cx={vehicle.x * 2}
+            cy={vehicle.y * 2}
+            r="12"
+            fill={getVehicleColor(vehicle.status)}
+            stroke="#ffffff"
+            strokeWidth="2"
+          />
+          <text
+            x={vehicle.x * 2}
+            y={vehicle.y * 2 + 4}
+            textAnchor="middle"
+            fill="#ffffff"
+            fontSize="10"
+            fontWeight="bold"
+          >
+            {vehicle.id}
+          </text>
+        </g>
+      ))}
+    </svg>
+  );
+
+  return (
+    <div className="container mx-auto p-4 bg-gray-100 min-h-screen">
+      {/* Top Navigation Bar */}
+      <nav className="bg-white shadow-lg rounded-lg mb-6">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex justify-between h-16">
+            <div className="flex space-x-4">
+              {navItems.map((item) => (
+                <Button
+                  key={item.name}
+                  variant={activeTab === item.name ? "default" : "ghost"}
+                  className="flex items-center"
+                  onClick={() => setActiveTab(item.name)}
+                >
+                  {item.icon}
+                  {item.name}
+                </Button>
+              ))}
+            </div>
+            <div className="flex items-center space-x-4">
+              <Button variant="outline" size="icon">
+                <User className="h-4 w-4" />
+              </Button>
+              <Button variant="outline" size="icon">
+                <Key className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* API Testing Interface */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>API Endpoint Testing</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <Select onValueChange={setSelectedEndpoint}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select an endpoint" />
+                </SelectTrigger>
+                <SelectContent>
+                  {endpoints.map((endpoint) => (
+                    <SelectItem key={endpoint.value} value={endpoint.value}>
+                      {endpoint.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Textarea placeholder="Enter request body (if applicable)" className="h-32" />
+              <Button className="w-full">
+                <PlayCircle className="mr-2 h-4 w-4" /> Test Endpoint
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Response</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Textarea readOnly className="h-64" placeholder="API response will appear here" />
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Interactive Fleet Map */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Interactive Fleet Map</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[600px] rounded-lg overflow-hidden relative bg-gray-100">
+            {renderMap()}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Recommendations */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Recommendations for API Testing</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ul className="list-disc pl-5 space-y-2">
+            <li>Start with simple GET requests to familiarize yourself with the response structure.</li>
+            <li>Test edge cases, such as invalid inputs or out-of-range values, to ensure robust error handling.</li>
+            <li>Use the API key management feature to test different access levels and permissions.</li>
+            <li>Experiment with the fleet management endpoints to understand how vehicle data is structured and updated.</li>
+            <li>Try chaining multiple API calls to simulate real-world scenarios, like creating a maintenance task and then updating a vehicle's status.</li>
+            <li>Check the Documentation tab for detailed information on request/response formats and any rate limiting policies.</li>
+          </ul>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default APISandboxDashboard;

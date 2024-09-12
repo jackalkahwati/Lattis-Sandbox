@@ -39,7 +39,7 @@ def get_maintenance_report():
     ---
     responses:
       200:
-        description: Maintenance report with actions and downtime analysis
+        description: Maintenance report with actions, downtime analysis, and history
       500:
         description: Internal server error
     """
@@ -57,6 +57,12 @@ def get_maintenance_report():
         total_downtime = sum(2 for task in tasks if task.status == 'Completed')
         avg_downtime = total_downtime / completed_tasks if completed_tasks > 0 else 0
 
+        # Generate maintenance history data
+        maintenance_history = {}
+        for i in range(30):
+            date = (datetime.utcnow() - timedelta(days=i)).date()
+            maintenance_history[date.isoformat()] = sum(1 for task in tasks if task.created_at.date() == date)
+
         report_data = {
             'total_tasks': total_tasks,
             'completed_tasks': completed_tasks,
@@ -64,7 +70,8 @@ def get_maintenance_report():
             'in_progress_tasks': in_progress_tasks,
             'average_downtime_hours': round(avg_downtime, 2),
             'total_downtime_hours': total_downtime,
-            'period': '30 days'
+            'period': '30 days',
+            'maintenance_history': maintenance_history
         }
 
         return jsonify(report_data)

@@ -4,64 +4,99 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lattis API Sandbox</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css', v=6) }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"></script>
 </head>
 <body>
+    <div id="notification-area"></div>
     <div class="container">
-        <h1>Lattis API Sandbox</h1>
+        <header>
+            <h1>Lattis API Sandbox</h1>
+            <button id="dark-mode-toggle">Toggle Dark Mode</button>
+        </header>
         
-        <div class="api-section">
-            <h2>Fleet Management</h2>
-            <button id="getVehicles">Get Vehicles</button>
-            <button id="getFleetStatus">Get Fleet Status</button>
-            <button id="assignTask">Assign Task</button>
+        <div class="dashboard-grid">
+            <div class="card full-width">
+                <div class="card-header">
+                    <h2>Interactive Fleet Map</h2>
+                </div>
+                <div class="card-content">
+                    <div id="fleet-map"></div>
+                    <div id="vehicle-details" style="display: none;"></div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2>Real-time Updates</h2>
+                </div>
+                <div class="card-content">
+                    <ul id="status-updates"></ul>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2>Vehicle Status Distribution</h2>
+                </div>
+                <div class="card-content">
+                    <canvas id="vehicleStatusChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2>Maintenance Tasks Over Time</h2>
+                </div>
+                <div class="card-content">
+                    <canvas id="maintenanceTasksChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2>Vehicle Utilization Rate</h2>
+                </div>
+                <div class="card-content">
+                    <canvas id="vehicleUtilizationChart"></canvas>
+                </div>
+            </div>
         </div>
 
-        <div class="api-section">
-            <h2>Maintenance & Repair</h2>
-            <button id="getMaintenanceSchedule">Get Maintenance Schedule</button>
-            <button id="createMaintenanceTask">Create Maintenance Task</button>
-            <button id="getPredictiveMaintenance">Get Predictive Maintenance</button>
+        <div class="card full-width">
+            <div class="card-header">
+                <h2>API Testing Interface</h2>
+            </div>
+            <div class="card-content">
+                <div class="api-testing-container">
+                    <div class="endpoint-selection">
+                        <input type="text" id="endpoint-search" placeholder="Search endpoints...">
+                        <select id="endpoint-select">
+                            <option value="">Select an endpoint</option>
+                        </select>
+                    </div>
+                    <div class="request-response-container">
+                        <div class="request-container">
+                            <h3>Request</h3>
+                            <pre><code class="language-json" id="request-body" contenteditable="true"></code></pre>
+                            <div class="button-group">
+                                <button id="send-request">Send Request</button>
+                                <button id="save-request">Save Request</button>
+                                <button id="load-request">Load Request</button>
+                            </div>
+                        </div>
+                        <div class="response-container">
+                            <h3>Response</h3>
+                            <pre><code class="language-json" id="response-body"></code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div class="api-section">
-            <h2>Rebalancing & Optimization</h2>
-            <button id="getStations">Get Stations</button>
-            <button id="scheduleRebalancing">Schedule Rebalancing</button>
-            <button id="getOptimizationSuggestions">Get Optimization Suggestions</button>
-        </div>
-
-        <div class="api-section">
-            <h2>User & Access Management</h2>
-            <button id="manageAccess">Manage Access</button>
-            <button id="getUserActivity">Get User Activity</button>
-        </div>
-
-        <div class="api-section">
-            <h2>Data & Reporting</h2>
-            <button id="getUsageReport">Get Usage Report</button>
-            <button id="getMaintenanceReport">Get Maintenance Report</button>
-        </div>
-
-        <div class="api-section">
-            <h2>Integration</h2>
-            <button id="ingestGBFSData">Ingest GBFS Data</button>
-            <button id="connectRepairTicket">Connect Repair Ticket</button>
-        </div>
-
-        <div class="api-section">
-            <h2>Future-Ready Modules</h2>
-            <button id="setDynamicPricing">Set Dynamic Pricing</button>
-            <button id="defineGeofence">Define Geofence</button>
-        </div>
-
-        <h2>Error:</h2>
-        <pre id="error" class="error"></pre>
-
-        <h2>Response:</h2>
-        <pre id="response"></pre>
     </div>
 
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js', v=6) }}"></script>
 </body>
 </html>

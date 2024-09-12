@@ -1,0 +1,63 @@
+1. User Authentication & Authorization API:
+POST /api/v1/auth/register – Register a new user.
+POST /api/v1/auth/login – Login a user.
+POST /api/v1/auth/logout – Logout a user.
+GET /api/v1/auth/me – Get details of the currently logged-in user.
+GET /api/v1/auth/roles – Retrieve the list of user roles.
+POST /api/v1/auth/roles – Create a new user role.
+PUT /api/v1/auth/roles/{roleId} – Update a specific role.
+DELETE /api/v1/auth/roles/{roleId} – Delete a specific role.
+POST /api/v1/users/{userId}/roles/{roleId} – Assign a role to a user.
+DELETE /api/v1/users/{userId}/roles/{roleId} – Remove a role from a user.
+2. Vehicle Management API:
+POST /api/v1/vehicles – Add a new vehicle to the system.
+PATCH /api/v1/vehicles/{vehicleId} – Update an existing vehicle's details.
+DELETE /api/v1/vehicles/{vehicleId} – Remove a vehicle from the system.
+GET /api/v1/vehicles/{vehicleId} – Retrieve details of a specific vehicle.
+GET /api/v1/vehicles – List all available vehicles.
+3. Fleet Management API:
+POST /api/v1/fleets – Create a new fleet.
+PATCH /api/v1/fleets/{fleetId} – Update details of a specific fleet.
+DELETE /api/v1/fleets/{fleetId} – Delete a specific fleet.
+GET /api/v1/fleets/{fleetId} – Get details of a specific fleet.
+GET /api/v1/fleets – List all fleets.
+4. Trip Management API:
+POST /api/v1/trips – Start a new trip.
+PATCH /api/v1/trips/{tripId} – End an ongoing trip.
+GET /api/v1/trips/{tripId} – Retrieve details of a specific trip.
+GET /api/v1/trips – List all trips.
+5. Maintenance & Alerts API:
+POST /api/v1/maintenance – Schedule a maintenance task for a vehicle.
+PATCH /api/v1/maintenance/{maintenanceId} – Update the status of a scheduled maintenance task.
+GET /api/v1/vehicles/{vehicleId}/maintenance – Retrieve the maintenance history for a specific vehicle.
+GET /api/v1/maintenance – List all maintenance tasks.
+POST /api/v1/alerts – Create a new alert.
+GET /api/v1/alerts – Retrieve a list of all active alerts.
+6. Analytics & Reporting API:
+GET /api/v1/analytics/usage – Retrieve usage statistics for vehicles or fleets.
+POST /api/v1/reports – Generate a new report.
+GET /api/v1/reports/{reportId} – Retrieve details of a specific report.
+GET /api/v1/reports – List all available reports.
+7. Payment & Billing API:
+POST /api/v1/invoices – Create a new invoice.
+GET /api/v1/invoices/{invoiceId} – Retrieve details of a specific invoice.
+GET /api/v1/invoices – List all invoices.
+POST /api/v1/payments – Process a payment for an invoice.
+GET /api/v1/billing/history – Retrieve billing history for a user or organization.
+8. Location & Geofencing API:
+POST /api/v1/geofences – Create a new geofence.
+PATCH /api/v1/geofences/{geofenceId} – Update the details of an existing geofence.
+DELETE /api/v1/geofences/{geofenceId} – Remove a geofence.
+GET /api/v1/geofences/{geofenceId} – Retrieve details of a specific geofence.
+GET /api/v1/geofences – List all available geofences.
+9. Other Important Endpoints:
+Fleet Management:
+GET /api/vehicles – Fetch a list of all vehicles.
+POST /api/tasks – Create a maintenance task or job.
+PUT /api/vehicles/{id} – Update vehicle data for a specific vehicle.
+GET /api/stats – Retrieve fleet statistics (e.g., vehicle performance, usage, and maintenance).
+Dynamic Pricing:
+Set dynamic pricing rules to adjust vehicle rates based on peak hours, demand, or other custom criteria.
+User & Access Management:
+POST /api/users – Create and manage user accounts.
+GET /api/user-activity – Retrieve logs of user activity.
