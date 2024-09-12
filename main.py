@@ -27,12 +27,13 @@ def create_app():
     app.register_blueprint(reporting.bp)
     app.register_blueprint(integration.bp)
     app.register_blueprint(future_modules.bp)
-    app.register_blueprint(auth.bp)  # Register the new auth blueprint
+    app.register_blueprint(auth.bp)
 
     @app.route('/')
     def index():
         app.logger.debug(f"Rendering template: {app.template_folder}/index.html")
-        return render_template('index.html')
+        mapbox_access_token = os.environ.get('MAPBOX_ACCESS_TOKEN')
+        return render_template('index.html', MAPBOX_ACCESS_TOKEN=mapbox_access_token)
 
     @app.errorhandler(404)
     def not_found(error):

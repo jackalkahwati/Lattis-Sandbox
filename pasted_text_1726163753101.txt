@@ -1,0 +1,61 @@
+Left Panel (Input/Configuration Panel)
+Parameters Section
+Search Type:
+Replace "Search" with API interaction types, and allow users to select which Lattis API they want to interact with:
+Vehicle Search: Retrieve vehicle details.
+Fleet Search: Retrieve fleet details.
+Trip Search: Retrieve trip details.
+User Search: Retrieve user roles or other user-related details.
+"Try an example" Button:
+This could populate with pre-configured examples such as fetching vehicle data, trip data, or generating a report. For instance:
+A sample vehicle search could show GET /api/v1/vehicles.
+A sample fleet management request could be GET /api/v1/fleets.
+API Endpoint Selection:
+Dropdown menu where users can select Lattis API endpoints for their query. Example:
+Vehicle Management: GET /api/v1/vehicles, PATCH /api/v1/vehicles/{vehicleId}
+Fleet Management: POST /api/v1/fleets, GET /api/v1/fleets/{fleetId}
+User Management: GET /api/v1/auth/me, POST /api/v1/auth/register
+Trip Management: GET /api/v1/trips, POST /api/v1/trips
+Optional Parameters:
+Allow users to specify optional parameters for more granular control over their Lattis API query:
+User Role (for User Management): Add or remove user roles using POST /api/v1/users/{userId}/roles/{roleId}.
+Vehicle Status (for Vehicle Management): Update vehicle status by ID using PATCH /api/v1/vehicles/{vehicleId}.
+Fleet ID: Specify fleet IDs when interacting with Fleet Management APIs like GET /api/v1/fleets/{fleetId}.
+Access Token Field:
+Users will need to enter their Lattis API access token. This field will authenticate the API queries. You can add a link to the Lattis settings page for obtaining an API key. Example: Bearer YOUR_API_KEY.
+Advanced and Batch Options (Collapsed):
+Advanced Options: Allow users to configure additional query parameters such as batch requests (for scheduling multiple vehicle trips or maintenance tasks) or filter search results by location or status.
+Batch Options: Add the ability to perform batch operations like scheduling maintenance for multiple vehicles (POST /api/v1/maintenance) or fetching data on multiple users at once.
+Central Section (Interactive Map Display)
+Interactive Fleet or Vehicle Map:
+The map should display a live or static overview of the current vehicle or fleet statuses:
+Map Display: Vehicles or fleets can be shown based on their location, retrieved through API calls like GET /api/v1/vehicles. Each vehicle marker could reflect its current status (active, maintenance, etc.).
+Click to Generate Query: Similar to the original design, clicking on a vehicle marker can trigger a query (e.g., GET /api/v1/vehicles/{vehicleId}) to retrieve details about the selected vehicle.
+Zoom Controls: Use the same standard zoom controls to explore the map, showing more granular details of vehicle or fleet locations.
+Right Panel (Query Information & Response Display)
+Request URL:
+Shows the current request URL for the selected API endpoint. For example:
+If searching for vehicle details, it might display:
+plaintext
+Copy code
+GET: https://api.lattis.com/api/v1/vehicles
+If fetching fleet statistics:
+plaintext
+Copy code
+GET: https://api.lattis.com/api/v1/fleets/{fleetId}
+Response:
+After making a query, the API response (in JSON format) will be shown here. For instance, if a user runs a request to get vehicle details (GET /api/v1/vehicles/{vehicleId}), the response will show up with vehicle-specific data:
+json
+Copy code
+{
+  "vehicleId": "1234",
+  "status": "active",
+  "location": { "lat": 40.7128, "long": -74.0060 },
+  "lastMaintenance": "2024-09-01"
+}
+This panel would also provide additional debugging tools, such as headers and payloads, to inspect request/response details.
+Overall UI/UX Adjustments
+Clarity: The UI should clearly categorize the various Lattis API functionalities (Vehicle, Fleet, User, Trip, and Maintenance). The API endpoints can be grouped within each category for ease of use.
+User Feedback: Guide users through example queries and make sure they understand how to interact with the Lattis platform through the API.
+Collapsible Advanced Options: Maintain the clean UI while offering advanced query settings for more experienced users or developers.
+Consistency: Keep the structure similar to the original sandbox, ensuring the Lattis API functionality fits naturally into the UI.

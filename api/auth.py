@@ -4,6 +4,7 @@ from extensions import db
 from sqlalchemy.exc import SQLAlchemyError
 import logging
 from marshmallow import Schema, fields, ValidationError
+import secrets
 
 bp = Blueprint('auth', __name__, url_prefix='/api/v1/auth')
 
@@ -22,6 +23,27 @@ class LoginSchema(Schema):
 class RoleSchema(Schema):
     name = fields.String(required=True)
     description = fields.String()
+
+def generate_test_token():
+    return secrets.token_urlsafe(32)
+
+@bp.route('/generate-test-token', methods=['POST'])
+def create_test_token():
+    """
+    Generate a test API Access Token
+    ---
+    responses:
+      200:
+        description: Test token generated successfully
+      500:
+        description: Internal server error
+    """
+    try:
+        test_token = generate_test_token()
+        return jsonify({"test_token": test_token}), 200
+    except Exception as e:
+        logger.error(f"Error in create_test_token: {str(e)}")
+        return jsonify({"error": "An error occurred while generating the test token"}), 500
 
 @bp.route('/register', methods=['POST'])
 def register():

@@ -4,99 +4,107 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lattis API Sandbox</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css', v=6) }}">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css', v=41) }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/default.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css' rel='stylesheet' />
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
+    <script>const MAPBOX_ACCESS_TOKEN = '{{ MAPBOX_ACCESS_TOKEN }}';</script>
 </head>
 <body>
-    <div id="notification-area"></div>
-    <div class="container">
-        <header>
-            <h1>Lattis API Sandbox</h1>
-            <button id="dark-mode-toggle">Toggle Dark Mode</button>
-        </header>
-        
-        <div class="dashboard-grid">
-            <div class="card full-width">
-                <div class="card-header">
-                    <h2>Interactive Fleet Map</h2>
+    <div id="notification-area" aria-live="polite"></div>
+    <header>
+        <h1>Lattis API Sandbox</h1>
+        <nav>
+            <button id="dark-mode-toggle" class="icon-button" title="Toggle Dark Mode" aria-label="Toggle Dark Mode">🌓</button>
+            <button id="help-button" class="icon-button" title="Help" aria-label="Open Help">❔</button>
+        </nav>
+    </header>
+    <main class="container">
+        <div class="panel-container">
+            <div class="left-panel">
+                <h2>API Configuration</h2>
+                <div class="token-container">
+                    <label for="access-token" class="visually-hidden">API Access Token</label>
+                    <input type="text" id="access-token" placeholder="Enter your API access token" title="Enter your Lattis API access token">
+                    <button id="generate-test-token-btn" title="Generate a test API Access Token">Generate Test Token</button>
                 </div>
-                <div class="card-content">
-                    <div id="fleet-map"></div>
-                    <div id="vehicle-details" style="display: none;"></div>
+                <div class="api-section">
+                    <h2>API Endpoints</h2>
+                    <input type="text" id="endpoint-search" placeholder="Search endpoints...">
+                    <div class="endpoint-list" id="endpoint-list">
+                        <!-- Endpoint items will be dynamically added here -->
+                    </div>
                 </div>
-            </div>
-            
-            <div class="card">
-                <div class="card-header">
-                    <h2>Real-time Updates</h2>
-                </div>
-                <div class="card-content">
-                    <ul id="status-updates"></ul>
-                </div>
-            </div>
-            
-            <div class="card">
-                <div class="card-header">
-                    <h2>Vehicle Status Distribution</h2>
-                </div>
-                <div class="card-content">
-                    <canvas id="vehicleStatusChart"></canvas>
-                </div>
-            </div>
-            
-            <div class="card">
-                <div class="card-header">
-                    <h2>Maintenance Tasks Over Time</h2>
-                </div>
-                <div class="card-content">
-                    <canvas id="maintenanceTasksChart"></canvas>
-                </div>
-            </div>
-            
-            <div class="card">
-                <div class="card-header">
-                    <h2>Vehicle Utilization Rate</h2>
-                </div>
-                <div class="card-content">
-                    <canvas id="vehicleUtilizationChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <div class="card full-width">
-            <div class="card-header">
-                <h2>API Testing Interface</h2>
-            </div>
-            <div class="card-content">
-                <div class="api-testing-container">
-                    <div class="endpoint-selection">
-                        <input type="text" id="endpoint-search" placeholder="Search endpoints...">
-                        <select id="endpoint-select">
-                            <option value="">Select an endpoint</option>
+                <details>
+                    <summary>Advanced Options</summary>
+                    <div id="advanced-options">
+                        <label for="request-timeout" title="Set the timeout for API requests">Request Timeout (ms):</label>
+                        <input type="number" id="request-timeout" value="5000" min="1000" step="1000">
+                        <label for="response-format" title="Choose the response format">Response Format:</label>
+                        <select id="response-format">
+                            <option value="json">JSON</option>
+                            <option value="xml">XML</option>
                         </select>
                     </div>
-                    <div class="request-response-container">
-                        <div class="request-container">
-                            <h3>Request</h3>
-                            <pre><code class="language-json" id="request-body" contenteditable="true"></code></pre>
-                            <div class="button-group">
-                                <button id="send-request">Send Request</button>
-                                <button id="save-request">Save Request</button>
-                                <button id="load-request">Load Request</button>
-                            </div>
-                        </div>
-                        <div class="response-container">
-                            <h3>Response</h3>
-                            <pre><code class="language-json" id="response-body"></code></pre>
-                        </div>
-                    </div>
+                </details>
+            </div>
+            <div class="right-panel">
+                <h2>API Request</h2>
+                <div id="request-url" class="code-block"></div>
+                <div id="request-body" class="code-block" contenteditable="true" spellcheck="false"></div>
+                <button id="send-request-btn">Send Request</button>
+                <h2>API Response</h2>
+                <div class="response-container">
+                    <pre><code id="response-body" class="json"></code></pre>
+                    <div id="loading-spinner" class="spinner" aria-hidden="true"></div>
                 </div>
             </div>
         </div>
+        <div class="central-section">
+            <h2>Interactive Fleet Map</h2>
+            <div id="fleet-map" style="width: 100%; height: 400px;" aria-label="Interactive map showing fleet locations"></div>
+        </div>
+        <div class="dashboard-section">
+            <h2>Dashboard</h2>
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <h3>Total Vehicles</h3>
+                    <p id="total-vehicles">Loading...</p>
+                </div>
+                <div class="dashboard-card">
+                    <h3>Active Trips</h3>
+                    <p id="active-trips">Loading...</p>
+                </div>
+                <div class="dashboard-card">
+                    <h3>Maintenance Tasks</h3>
+                    <p id="maintenance-tasks">Loading...</p>
+                </div>
+                <div class="dashboard-card">
+                    <h3>Revenue Today</h3>
+                    <p id="revenue-today">Loading...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2024 Lattis API Sandbox. All rights reserved.</p>
+    </footer>
+    <div id="help-modal" class="modal" aria-hidden="true">
+        <div class="modal-content">
+            <button class="close" aria-label="Close help modal">&times;</button>
+            <h2>How to Use the Lattis API Sandbox</h2>
+            <ol>
+                <li>Enter your API access token or generate a test token.</li>
+                <li>Select an API endpoint from the list or use the search feature.</li>
+                <li>Fill in any required parameters in the request body.</li>
+                <li>Click "Send Request" to test the API.</li>
+                <li>View the response in the right panel.</li>
+                <li>Explore the interactive fleet map and dashboard for more insights.</li>
+            </ol>
+        </div>
     </div>
-
-    <script src="{{ url_for('static', filename='js/main.js', v=6) }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js', v=41) }}"></script>
 </body>
 </html>
