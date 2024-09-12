@@ -3,11 +3,17 @@ from models import Vehicle, MaintenanceTask
 from extensions import db
 from sqlalchemy.exc import SQLAlchemyError
 import logging
+from marshmallow import Schema, fields, ValidationError
 
 bp = Blueprint('fleet', __name__, url_prefix='/fleet')
 
 logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
+
+class TaskSchema(Schema):
+    vehicle_id = fields.Integer(required=True)
+    task_type = fields.String(required=True)
+    description = fields.String(required=True)
 
 @bp.route('/vehicles', methods=['GET'])
 def get_vehicles():
@@ -61,13 +67,18 @@ def assign_task():
         description: Internal server error
     """
     try:
-        data = request.json
-        if not all(k in data for k in ('vehicle_id', 'task_type', 'description')):
-            return jsonify({'error': 'Missing required fields'}), 400
+        schema = TaskSchema()
+        try:
+            data = schema.load(request.json)
+        except ValidationError as err:
+            return jsonify({'error': 'Invalid input', 'details': err.messages}), 400
 
         vehicle = Vehicle.query.get(data['vehicle_id'])
         if not vehicle:
-            return jsonify({'error': 'Vehicle not found'}), 404
+            return jsonify({'error': 'Vehicle not found', 'details': f"No vehicle with id {data['vehicle_id']}"}), 404
+
+        if data['task_type'] not in ['maintenance', 'rebalancing']:
+            return jsonify({'error': 'Invalid task type', 'details': "Task type must be 'maintenance' or 'rebalancing'"}), 400
 
         task = MaintenanceTask(
             vehicle_id=data['vehicle_id'],

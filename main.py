@@ -3,9 +3,14 @@ from flask_migrate import Migrate
 from extensions import db
 from api import fleet, maintenance, rebalancing, user, reporting, integration, future_modules
 import os
+import logging
 
 def create_app():
     app = Flask(__name__)
+
+    # Configure logging
+    logging.basicConfig(filename='app.log', level=logging.ERROR)
+    logger = logging.getLogger(__name__)
 
     # Database configuration
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
@@ -29,11 +34,18 @@ def create_app():
 
     @app.errorhandler(404)
     def not_found(error):
+        logger.error(f"404 error: {error}")
         return jsonify({"error": "Not found"}), 404
 
     @app.errorhandler(500)
     def server_error(error):
+        logger.error(f"500 error: {error}")
         return jsonify({"error": "Internal server error"}), 500
+
+    @app.errorhandler(Exception)
+    def handle_exception(e):
+        logger.error(f"Unhandled exception: {str(e)}")
+        return jsonify({"error": "An unexpected error occurred. Please try again later or contact support."}), 500
 
     return app
 

@@ -4,8 +4,17 @@ from extensions import db
 from sqlalchemy.exc import SQLAlchemyError
 import random
 from datetime import datetime, timedelta
+import logging
+from marshmallow import Schema, fields, ValidationError
 
 bp = Blueprint('maintenance', __name__, url_prefix='/maintenance')
+
+logging.basicConfig(level=logging.ERROR)
+logger = logging.getLogger(__name__)
+
+class MaintenanceTaskSchema(Schema):
+    vehicle_id = fields.Integer(required=True)
+    description = fields.String(required=True)
 
 @bp.route('/schedule', methods=['GET'])
 def get_maintenance_schedule():
@@ -28,7 +37,8 @@ def get_maintenance_schedule():
             'created_at': t.created_at.isoformat()
         } for t in tasks])
     except SQLAlchemyError as e:
-        return jsonify({'error': 'Database error', 'details': str(e)}), 500
+        logger.error(f"Database error in get_maintenance_schedule: {str(e)}")
+        return jsonify({'error': 'A database error occurred. Please try again later or contact support.'}), 500
 
 @bp.route('/task', methods=['POST'])
 def create_maintenance_task():
@@ -55,13 +65,15 @@ def create_maintenance_task():
         description: Internal server error
     """
     try:
-        data = request.json
-        if not all(k in data for k in ('vehicle_id', 'description')):
-            return jsonify({'error': 'Missing required fields'}), 400
+        schema = MaintenanceTaskSchema()
+        try:
+            data = schema.load(request.json)
+        except ValidationError as err:
+            return jsonify({'error': 'Invalid input', 'details': err.messages}), 400
 
         vehicle = Vehicle.query.get(data['vehicle_id'])
         if not vehicle:
-            return jsonify({'error': 'Vehicle not found'}), 404
+            return jsonify({'error': 'Vehicle not found', 'details': f"No vehicle with id {data['vehicle_id']}"}), 404
 
         task = MaintenanceTask(
             vehicle_id=data['vehicle_id'],
@@ -72,8 +84,9 @@ def create_maintenance_task():
         db.session.commit()
         return jsonify({'message': 'Maintenance task created', 'id': task.id}), 201
     except SQLAlchemyError as e:
+        logger.error(f"Database error in create_maintenance_task: {str(e)}")
         db.session.rollback()
-        return jsonify({'error': 'Database error', 'details': str(e)}), 500
+        return jsonify({'error': 'A database error occurred. Please try again later or contact support.'}), 500
 
 @bp.route('/predictive-maintenance', methods=['GET'])
 def get_predictive_maintenance():
@@ -106,4 +119,5 @@ def get_predictive_maintenance():
 
         return jsonify(predictive_data)
     except SQLAlchemyError as e:
-        return jsonify({'error': 'Database error', 'details': str(e)}), 500
+        logger.error(f"Database error in get_predictive_maintenance: {str(e)}")
+        return jsonify({'error': 'A database error occurred. Please try again later or contact support.'}), 500
