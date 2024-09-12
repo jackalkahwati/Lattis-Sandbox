@@ -1,0 +1,40 @@
+Create a sandbox environment for testing and exploring Lattis' API functionalities, including:
+Fleet Management API:
+Manage vehicle tracking, task assignment to field technicians, and monitor vehicle status.
+Endpoints:
+GET /fleet/vehicles: Retrieves real-time vehicle data.
+POST /fleet/task: Assigns maintenance or rebalancing tasks.
+GET /fleet/status: Monitors vehicle statuses (live, out of service, etc.).
+Maintenance & Repair API:
+Schedule and track maintenance tasks, customer-reported issues, and predictive maintenance.
+Endpoints:
+GET /maintenance/schedule: View current maintenance schedules.
+POST /maintenance/task: Create tasks for repairs.
+GET /predictive-maintenance: Retrieve predictive maintenance data based on sensor inputs.
+Rebalancing & Optimization API:
+Monitor and automate the redistribution of vehicles across stations to meet thresholds and SLAs.
+Endpoints:
+GET /rebalancing/stations: Check real-time bike distribution.
+POST /rebalancing/task: Schedule rebalancing tasks.
+POST /optimization/suggestions: Generate AI-based optimization suggestions for vehicle placement.
+User & Access Management API:
+Manage rider and technician access and monitor user activity.
+Endpoints:
+POST /user/access: Grant or revoke access based on roles.
+GET /user/activity: View logs of user activities.
+Data & Reporting API:
+Generate reports on fleet usage, vehicle downtime, and maintenance efficiency.
+Endpoints:
+GET /reports/usage: Retrieve fleet usage data.
+GET /reports/maintenance: Analyze maintenance actions and downtime.
+Integration API:
+Seamlessly integrate with existing systems (e.g., ERP, CRM, GBFS).
+Endpoints:
+POST /integration/gbfs: Ingest real-time bike location data from GBFS.
+POST /integration/crm: Connect repair tickets with CRM.
+Future-Ready Modules:
+Dynamic pricing, geofencing, and autonomous operations for expanding fleet management capabilities.
+Endpoints:
+POST /dynamic-pricing: Set custom pricing rules.
+POST /geofencing: Define zones for vehicle usage.
+Provide a clean, user-friendly interface for testing, simulate real-time fleet conditions, and include documentation for each API.
