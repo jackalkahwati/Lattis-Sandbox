@@ -1,0 +1,25 @@
+Follow these design changes:
+Map-Centric Layout:
+Move the map to the center of the dashboard, giving it full width similar to the third image. The map should occupy a large portion of the screen, making it the central focus.
+Remove any unnecessary elements around the map to give it a clean and spacious appearance.
+Minimized Side Panel:
+Simplify the left-side API endpoints and configuration panel by using collapsible menus for advanced actions.
+Only display essential options and fields by default (e.g., GET/POST actions) with additional options hidden unless clicked (like a dropdown or toggle).
+Unified API Interaction Panel:
+Place the API request input fields directly beside the map, mimicking the proximity of the query bar in the third image. Users should be able to input queries, like vehicle searches or maintenance tasks, without moving away from the map.
+Move all secondary configuration settings (e.g., API tokens) into a small button or an advanced menu at the top, reducing the clutter.
+Minimalist Button Design:
+Redesign the buttons (e.g., "Select," "Send Request") to be more minimalist, with fewer colors and borders, adopting a more flat and modern UI style.
+Use a single, consistent color theme across all buttons and actions, focusing on simplicity and clarity.
+Integrated Response Panel:
+The API response section should appear next to or below the map, rather than in a separate, isolated box. The response panel can be collapsible and should provide real-time feedback.
+Create a seamless workflow where the user interacts with the API and sees results on the map or within the same screen space.
+Refined Text and Labels:
+Remove verbose descriptions and extra text in the dashboard. Replace them with icons, placeholders, or contextual tooltips that appear when necessary.
+Streamline all text to be concise, focusing on core actions like 'Query' or 'Send Request' rather than long-winded descriptions.
+Interactive Query Input:
+Like the third image, make the query input box more prominent, located next to or above the map. The user should be able to interact with the map by clicking points or entering search terms directly into a minimal search bar.
+Additional Considerations:
+Maintain responsiveness for different screen sizes, ensuring the map and inputs adjust accordingly.
+Keep the dashboard minimalistic, reducing cognitive load for the user while improving efficiency.
+Use flat design elements and consistent visual themes across all parts of the UI.

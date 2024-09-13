@@ -1,127 +1,73 @@
 from flask import Blueprint, jsonify, request
-from models import Vehicle, MaintenanceTask
+from models import Vehicle
 from extensions import db
 from sqlalchemy.exc import SQLAlchemyError
 import logging
 from marshmallow import Schema, fields, ValidationError
 
-bp = Blueprint('fleet', __name__, url_prefix='/fleet')
+bp = Blueprint('fleet', __name__, url_prefix='/api/v1/fleet')
 
 logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
 
-class TaskSchema(Schema):
-    vehicle_id = fields.Integer(required=True)
-    task_type = fields.String(required=True)
-    description = fields.String(required=True)
+class VehicleSchema(Schema):
+    id = fields.Integer(dump_only=True)
+    name = fields.String(required=True)
+    status = fields.String(required=True)
+    location = fields.String(required=True)
 
 @bp.route('/vehicles', methods=['GET'])
 def get_vehicles():
     """
-    Retrieve real-time vehicle data
+    Retrieve all vehicles
     ---
     responses:
       200:
-        description: A list of vehicles
+        description: A list of all vehicles
       500:
         description: Internal server error
     """
     try:
         vehicles = Vehicle.query.all()
-        return jsonify([{
-            'id': v.id,
-            'name': v.name,
-            'status': v.status,
-            'location': v.location
-        } for v in vehicles])
+        vehicle_schema = VehicleSchema(many=True)
+        return jsonify(vehicle_schema.dump(vehicles)), 200
     except SQLAlchemyError as e:
         logger.error(f"Database error in get_vehicles: {str(e)}")
-        return jsonify({'error': 'A database error occurred. Please try again later or contact support.'}), 500
+        return jsonify({"error": "An error occurred while fetching vehicles"}), 500
 
-@bp.route('/task', methods=['POST'])
-def assign_task():
+@bp.route('/vehicles', methods=['POST'])
+def create_vehicle():
     """
-    Assigns maintenance or rebalancing tasks
+    Create a new vehicle
     ---
     parameters:
-      - name: vehicle_id
+      - name: vehicle
         in: body
         required: true
-        type: integer
-      - name: task_type
-        in: body
-        required: true
-        type: string
-      - name: description
-        in: body
-        required: true
-        type: string
+        schema:
+          $ref: '#/definitions/Vehicle'
     responses:
       201:
-        description: Task assigned successfully
+        description: Vehicle created successfully
       400:
-        description: Bad request
-      404:
-        description: Vehicle not found
+        description: Invalid input
       500:
         description: Internal server error
     """
     try:
-        schema = TaskSchema()
-        try:
-            data = schema.load(request.json)
-        except ValidationError as err:
-            return jsonify({'error': 'Invalid input', 'details': err.messages}), 400
+        vehicle_schema = VehicleSchema()
+        data = vehicle_schema.load(request.json)
+    except ValidationError as err:
+        return jsonify({"error": "Invalid input", "details": err.messages}), 400
 
-        vehicle = Vehicle.query.get(data['vehicle_id'])
-        if not vehicle:
-            return jsonify({'error': 'Vehicle not found', 'details': f"No vehicle with id {data['vehicle_id']}"}), 404
-
-        if data['task_type'] not in ['maintenance', 'rebalancing']:
-            return jsonify({'error': 'Invalid task type', 'details': "Task type must be 'maintenance' or 'rebalancing'"}), 400
-
-        task = MaintenanceTask(
-            vehicle_id=data['vehicle_id'],
-            description=data['description'],
-            status='Pending'
-        )
-        db.session.add(task)
+    try:
+        new_vehicle = Vehicle(**data)
+        db.session.add(new_vehicle)
         db.session.commit()
-
-        return jsonify({'message': 'Task assigned successfully', 'task_id': task.id}), 201
+        return jsonify(vehicle_schema.dump(new_vehicle)), 201
     except SQLAlchemyError as e:
-        logger.error(f"Database error in assign_task: {str(e)}")
+        logger.error(f"Database error in create_vehicle: {str(e)}")
         db.session.rollback()
-        return jsonify({'error': 'A database error occurred. Please try again later or contact support.'}), 500
+        return jsonify({"error": "An error occurred while creating the vehicle"}), 500
 
-@bp.route('/status', methods=['GET'])
-def get_fleet_status():
-    """
-    Monitors vehicle statuses (live, out of service, etc.)
-    ---
-    responses:
-      200:
-        description: Fleet status
-      500:
-        description: Internal server error
-    """
-    try:
-        vehicles = Vehicle.query.all()
-        status_count = {
-            'live': 0,
-            'out_of_service': 0,
-            'maintenance': 0
-        }
-        for vehicle in vehicles:
-            if vehicle.status in status_count:
-                status_count[vehicle.status] += 1
-            else:
-                status_count[vehicle.status] = 1
-
-        return jsonify({
-            'total_vehicles': len(vehicles),
-            'status_breakdown': status_count
-        })
-    except SQLAlchemyError as e:
-        logger.error(f"Database error in get_fleet_status: {str(e)}")
-        return jsonify({'error': 'A database error occurred. Please try again later or contact support.'}), 500
+# Keep any other existing routes in the file
