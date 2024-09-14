@@ -20,27 +20,33 @@ function initializeMap() {
 
     mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 
-    map = new mapboxgl.Map({
-        container: 'fleet-map',
-        style: 'mapbox://styles/mapbox/streets-v11',
-        center: [-122.4194, 37.7749],
-        zoom: 12
-    });
+    try {
+        map = new mapboxgl.Map({
+            container: 'fleet-map',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [-122.4194, 37.7749],
+            zoom: 12
+        });
 
-    map.on('load', () => {
-        console.log('Map loaded successfully');
-        document.querySelector('.map-loading').style.display = 'none';
-        document.getElementById('fleet-map').style.visibility = 'visible';
-        map.addControl(new mapboxgl.NavigationControl());
-        map.addControl(new mapboxgl.FullscreenControl());
-        fetchVehicles();
-    });
+        map.on('load', () => {
+            console.log('Map loaded successfully');
+            document.querySelector('.map-loading').style.display = 'none';
+            document.getElementById('fleet-map').style.visibility = 'visible';
+            map.addControl(new mapboxgl.NavigationControl());
+            map.addControl(new mapboxgl.FullscreenControl());
+            fetchVehicles();
+        });
 
-    map.on('error', (e) => {
-        console.error('Map error:', e);
+        map.on('error', (e) => {
+            console.error('Map error:', e);
+            document.querySelector('.map-loading').style.display = 'none';
+            document.getElementById('fleet-map').innerHTML = '<p>Error: Unable to load map. Please check your internet connection and try again.</p>';
+        });
+    } catch (error) {
+        console.error('Error initializing map:', error);
         document.querySelector('.map-loading').style.display = 'none';
-        document.getElementById('fleet-map').innerHTML = '<p>Error: Unable to load map. Please check your internet connection and try again.</p>';
-    });
+        document.getElementById('fleet-map').innerHTML = '<p>Error: Unable to initialize map. Please try refreshing the page.</p>';
+    }
 }
 
 function fetchVehicles() {
@@ -121,30 +127,57 @@ function setupAPIInteraction() {
     const sendRequestBtn = document.getElementById('send-request-btn');
     const responseBody = document.getElementById('response-body');
 
-    const endpoints = [
-        { method: 'GET', path: '/api/v1/fleet/vehicles' },
-        { method: 'POST', path: '/api/v1/fleet/vehicles' },
-        { method: 'POST', path: '/api/v1/maintenance/tasks' },
-        { method: 'POST', path: '/api/v1/rebalancing/task' },
-        { method: 'GET', path: '/api/v1/user/activity' }
-    ];
+    fetch('/api/config')
+        .then(response => response.json())
+        .then(data => {
+            populateEndpointDropdown(data.endpoints);
+        })
+        .catch(error => {
+            console.error('Error fetching API config:', error);
+            showNotification('Failed to load API endpoints.', 'error');
+        });
 
-    endpoints.forEach(endpoint => {
-        const option = document.createElement('option');
-        option.value = JSON.stringify(endpoint);
-        option.textContent = `${endpoint.method} ${endpoint.path}`;
-        endpointSelect.appendChild(option);
-    });
+    function populateEndpointDropdown(endpoints) {
+        endpointSelect.innerHTML = '<option value="">Select an endpoint</option>';
+        
+        for (const [category, endpointList] of Object.entries(endpoints)) {
+            const optgroup = document.createElement('optgroup');
+            optgroup.label = category;
+            
+            endpointList.forEach(endpoint => {
+                const option = document.createElement('option');
+                option.value = JSON.stringify(endpoint);
+                option.textContent = `${endpoint.method} ${endpoint.path}`;
+                optgroup.appendChild(option);
+            });
+            
+            endpointSelect.appendChild(optgroup);
+        }
+    }
 
     endpointSelect.addEventListener('change', (e) => {
         if (e.target.value) {
             const endpoint = JSON.parse(e.target.value);
-            requestUrl.textContent = `${endpoint.method} ${endpoint.path}`;
-            requestBody.textContent = endpoint.method === 'GET' ? '{}' : '{\n  \n}';
+            selectEndpoint(endpoint);
         }
     });
 
-    sendRequestBtn.addEventListener('click', () => {
+    sendRequestBtn.addEventListener('click', sendRequest);
+
+    function selectEndpoint(endpoint) {
+        requestUrl.textContent = `${endpoint.method} ${endpoint.path}`;
+        requestBody.textContent = endpoint.method !== 'GET' ? '{\n  \n}' : '{}';
+        highlightCode();
+    }
+
+    function highlightCode() {
+        if (window.hljs) {
+            hljs.highlightElement(requestBody);
+            hljs.highlightElement(responseBody);
+        }
+    }
+
+    function sendRequest() {
         const selectedEndpoint = JSON.parse(endpointSelect.value);
         const url = selectedEndpoint.path;
         const method = selectedEndpoint.method;
@@ -167,13 +200,14 @@ function setupAPIInteraction() {
         .then(response => response.json())
         .then(data => {
             responseBody.textContent = JSON.stringify(data, null, 2);
+            highlightCode();
             showNotification('Request completed successfully.', 'success');
         })
         .catch(error => {
             responseBody.textContent = `Error: ${error.message}`;
             showNotification('An error occurred while sending the request.', 'error');
         });
-    });
+    }
 }
 
 function showNotification(message, type = 'info') {

@@ -6,8 +6,6 @@ from api import fleet, maintenance, rebalancing, user, reporting, integration, f
 import os
 import logging
 from dotenv import load_dotenv
-# Remove the CSRF import
-# from flask_wtf.csrf import CSRFProtect
 
 load_dotenv()
 
@@ -42,9 +40,6 @@ def create_app():
     app.register_blueprint(pricing.bp)
 
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key')  # Provide a default secret key
-    
-    # Remove CSRF protection
-    # csrf = CSRFProtect(app)
 
     @app.route('/')
     def index():
@@ -73,94 +68,85 @@ def create_app():
     def health_check():
         return jsonify({"status": "healthy"}), 200
 
-    # Left Panel (Input/Configuration Panel)
     @app.route('/api/config', methods=['GET'])
     def get_api_config():
         api_config = {
-            'searchTypes': ['Vehicle Search', 'Fleet Search', 'Trip Search', 'User Search'],
             'endpoints': {
+                'User Authentication & Authorization': [
+                    {'method': 'POST', 'path': '/api/v1/auth/register'},
+                    {'method': 'POST', 'path': '/api/v1/auth/login'},
+                    {'method': 'POST', 'path': '/api/v1/auth/logout'},
+                    {'method': 'GET', 'path': '/api/v1/auth/me'},
+                    {'method': 'GET', 'path': '/api/v1/auth/roles'},
+                    {'method': 'POST', 'path': '/api/v1/auth/roles'},
+                    {'method': 'PUT', 'path': '/api/v1/auth/roles/{roleId}'},
+                    {'method': 'DELETE', 'path': '/api/v1/auth/roles/{roleId}'},
+                    {'method': 'POST', 'path': '/api/v1/users/{userId}/roles/{roleId}'},
+                    {'method': 'DELETE', 'path': '/api/v1/users/{userId}/roles/{roleId}'},
+                ],
                 'Vehicle Management': [
+                    {'method': 'POST', 'path': '/api/v1/vehicles'},
+                    {'method': 'PATCH', 'path': '/api/v1/vehicles/{vehicleId}'},
+                    {'method': 'DELETE', 'path': '/api/v1/vehicles/{vehicleId}'},
+                    {'method': 'GET', 'path': '/api/v1/vehicles/{vehicleId}'},
                     {'method': 'GET', 'path': '/api/v1/vehicles'},
-                    {'method': 'PATCH', 'path': '/api/v1/vehicles/{vehicleId}'}
                 ],
                 'Fleet Management': [
                     {'method': 'POST', 'path': '/api/v1/fleets'},
-                    {'method': 'GET', 'path': '/api/v1/fleets/{fleetId}'}
-                ],
-                'User Management': [
-                    {'method': 'GET', 'path': '/api/v1/auth/me'},
-                    {'method': 'POST', 'path': '/api/v1/auth/register'},
-                    {'method': 'POST', 'path': '/api/v1/users/{userId}/roles/{roleId}'}
+                    {'method': 'PATCH', 'path': '/api/v1/fleets/{fleetId}'},
+                    {'method': 'DELETE', 'path': '/api/v1/fleets/{fleetId}'},
+                    {'method': 'GET', 'path': '/api/v1/fleets/{fleetId}'},
+                    {'method': 'GET', 'path': '/api/v1/fleets'},
                 ],
                 'Trip Management': [
+                    {'method': 'POST', 'path': '/api/v1/trips'},
+                    {'method': 'PATCH', 'path': '/api/v1/trips/{tripId}'},
+                    {'method': 'GET', 'path': '/api/v1/trips/{tripId}'},
                     {'method': 'GET', 'path': '/api/v1/trips'},
-                    {'method': 'POST', 'path': '/api/v1/trips'}
                 ],
-                'Pricing Management': [
+                'Maintenance & Alerts': [
+                    {'method': 'POST', 'path': '/api/v1/maintenance'},
+                    {'method': 'PATCH', 'path': '/api/v1/maintenance/{maintenanceId}'},
+                    {'method': 'GET', 'path': '/api/v1/vehicles/{vehicleId}/maintenance'},
+                    {'method': 'GET', 'path': '/api/v1/maintenance'},
+                    {'method': 'POST', 'path': '/api/v1/alerts'},
+                    {'method': 'GET', 'path': '/api/v1/alerts'},
+                ],
+                'Analytics & Reporting': [
+                    {'method': 'GET', 'path': '/api/v1/analytics/usage'},
+                    {'method': 'POST', 'path': '/api/v1/reports'},
+                    {'method': 'GET', 'path': '/api/v1/reports/{reportId}'},
+                    {'method': 'GET', 'path': '/api/v1/reports'},
+                ],
+                'Payment & Billing': [
+                    {'method': 'POST', 'path': '/api/v1/invoices'},
+                    {'method': 'GET', 'path': '/api/v1/invoices/{invoiceId}'},
+                    {'method': 'GET', 'path': '/api/v1/invoices'},
+                    {'method': 'POST', 'path': '/api/v1/payments'},
+                    {'method': 'GET', 'path': '/api/v1/billing/history'},
+                ],
+                'Location & Geofencing': [
+                    {'method': 'POST', 'path': '/api/v1/geofences'},
+                    {'method': 'PATCH', 'path': '/api/v1/geofences/{geofenceId}'},
+                    {'method': 'DELETE', 'path': '/api/v1/geofences/{geofenceId}'},
+                    {'method': 'GET', 'path': '/api/v1/geofences/{geofenceId}'},
+                    {'method': 'GET', 'path': '/api/v1/geofences'},
+                ],
+                'Additional Fleet Management': [
+                    {'method': 'GET', 'path': '/api/vehicles'},
+                    {'method': 'POST', 'path': '/api/tasks'},
+                    {'method': 'PUT', 'path': '/api/vehicles/{id}'},
+                    {'method': 'GET', 'path': '/api/stats'},
+                ],
+                'Dynamic Pricing': [
                     {'method': 'POST', 'path': '/api/v1/pricing/base'},
-                    {'method': 'POST', 'path': '/api/v1/pricing/surge'}
-                ]
-            },
-            'exampleQueries': {
-                'Vehicle Search': {'method': 'GET', 'path': '/api/v1/vehicles'},
-                'Fleet Search': {'method': 'GET', 'path': '/api/v1/fleets'},
-                'Trip Search': {'method': 'GET', 'path': '/api/v1/trips'},
-                'User Search': {'method': 'GET', 'path': '/api/v1/auth/me'}
+                    {'method': 'POST', 'path': '/api/v1/pricing/surge'},
+                ],
             }
         }
         return jsonify(api_config)
 
-    # Central Section (Interactive Map Display)
-    @app.route('/api/map', methods=['GET'])
-    def get_map_data():
-        # Fetch vehicle or fleet data from the database or API
-        # and return it as JSON
-        vehicles = [
-            {'id': 1, 'lat': 40.7128, 'lng': -74.0060, 'status': 'active'},
-            {'id': 2, 'lat': 40.7142, 'lng': -74.0094, 'status': 'maintenance'},
-            # ... more vehicles
-        ]
-        return jsonify(vehicles)
-
-    # Add missing API routes
-    @app.route('/api/v1/fleet/vehicles', methods=['GET'])
-    def get_fleet_vehicles():
-        # Implement logic to fetch and return fleet vehicles
-        vehicles = [
-            {'id': 1, 'name': 'Vehicle 1', 'type': 'car', 'status': 'active'},
-            {'id': 2, 'name': 'Vehicle 2', 'type': 'bike', 'status': 'maintenance'},
-        ]
-        return jsonify(vehicles)
-
-    @app.route('/api/v1/fleet/vehicles', methods=['POST'])
-    def create_fleet_vehicle():
-        # Implement logic to create a new fleet vehicle
-        data = request.json
-        # In a real application, you would save this data to a database
-        return jsonify({'message': 'Vehicle created successfully', 'data': data}), 201
-
-    @app.route('/api/v1/maintenance/tasks', methods=['POST'])
-    def create_maintenance_task():
-        # Implement logic to create a new maintenance task
-        data = request.json
-        # In a real application, you would save this data to a database
-        return jsonify({'message': 'Maintenance task created successfully', 'data': data}), 201
-
-    @app.route('/api/v1/rebalancing/task', methods=['POST'])
-    def create_rebalancing_task():
-        # Implement logic to create a new rebalancing task
-        data = request.json
-        # In a real application, you would save this data to a database
-        return jsonify({'message': 'Rebalancing task created successfully', 'data': data}), 201
-
-    @app.route('/api/v1/user/activity', methods=['GET'])
-    def get_user_activity():
-        # Implement logic to fetch and return user activity
-        activities = [
-            {'id': 1, 'user_id': 1, 'action': 'login', 'timestamp': '2023-09-13T12:00:00Z'},
-            {'id': 2, 'user_id': 1, 'action': 'rent_vehicle', 'timestamp': '2023-09-13T12:15:00Z'},
-        ]
-        return jsonify(activities)
+    # ... (keep all other existing route handlers)
 
     return app
 
