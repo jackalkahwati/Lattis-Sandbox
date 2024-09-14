@@ -146,6 +146,16 @@ def create_app():
         }
         return jsonify(api_config)
 
+    @app.route('/api/map', methods=['GET'])
+    def get_map_data():
+        # Mock vehicle data
+        vehicles = [
+            {'id': 1, 'lat': 37.7749, 'lng': -122.4194, 'status': 'active', 'battery_level': 80},
+            {'id': 2, 'lat': 37.7847, 'lng': -122.4277, 'status': 'maintenance', 'battery_level': 20},
+            {'id': 3, 'lat': 37.7946, 'lng': -122.3940, 'status': 'inactive', 'battery_level': 0},
+        ]
+        return jsonify(vehicles)
+
     # ... (keep all other existing route handlers)
 
     return app

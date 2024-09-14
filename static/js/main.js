@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM Content Loaded');
     initializeMap();
     setupDarkModeToggle();
     setupAPIInteraction();
@@ -50,9 +51,11 @@ function initializeMap() {
 }
 
 function fetchVehicles() {
+    console.log('Fetching vehicles...');
     fetch('/api/map')
         .then(response => response.json())
         .then(data => {
+            console.log('Vehicles data:', data);
             updateVehicleMarkers(data);
         })
         .catch(error => {
@@ -61,6 +64,7 @@ function fetchVehicles() {
 }
 
 function updateVehicleMarkers(vehicles) {
+    console.log('Updating vehicle markers...');
     markers.forEach(marker => marker.remove());
     markers = [];
 
@@ -80,6 +84,7 @@ function updateVehicleMarkers(vehicles) {
 
         markers.push(marker);
     });
+    console.log('Vehicle markers updated');
 }
 
 function getVehicleColor(status) {
@@ -92,6 +97,7 @@ function getVehicleColor(status) {
 }
 
 function setupDarkModeToggle() {
+    console.log('Setting up dark mode toggle');
     const darkModeToggle = document.getElementById('dark-mode-toggle');
     const body = document.body;
 
@@ -121,7 +127,8 @@ function updateDarkModeUI() {
 }
 
 function setupAPIInteraction() {
-    const endpointSelect = document.getElementById('endpoint-select');
+    console.log('Setting up API interaction...');
+    const apiDropdownsContainer = document.getElementById('api-dropdowns');
     const requestUrl = document.getElementById('request-url');
     const requestBody = document.getElementById('request-body');
     const sendRequestBtn = document.getElementById('send-request-btn');
@@ -130,39 +137,55 @@ function setupAPIInteraction() {
     fetch('/api/config')
         .then(response => response.json())
         .then(data => {
-            populateEndpointDropdown(data.endpoints);
+            console.log('API config received:', data);
+            createApiDropdowns(data.endpoints);
         })
         .catch(error => {
             console.error('Error fetching API config:', error);
             showNotification('Failed to load API endpoints.', 'error');
         });
 
-    function populateEndpointDropdown(endpoints) {
-        endpointSelect.innerHTML = '<option value="">Select an endpoint</option>';
-        
+    function createApiDropdowns(endpoints) {
+        console.log('Creating API dropdowns...');
+        apiDropdownsContainer.innerHTML = ''; // Clear existing dropdowns
+
         for (const [category, endpointList] of Object.entries(endpoints)) {
-            const optgroup = document.createElement('optgroup');
-            optgroup.label = category;
-            
+            const dropdownContainer = document.createElement('div');
+            dropdownContainer.className = 'api-dropdown-container';
+
+            const label = document.createElement('label');
+            label.textContent = category;
+            label.htmlFor = `api-dropdown-${category.toLowerCase().replace(/\s+/g, '-')}`;
+
+            const select = document.createElement('select');
+            select.id = `api-dropdown-${category.toLowerCase().replace(/\s+/g, '-')}`;
+            select.className = 'api-dropdown';
+
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = `Select ${category} Endpoint`;
+            select.appendChild(defaultOption);
+
             endpointList.forEach(endpoint => {
                 const option = document.createElement('option');
                 option.value = JSON.stringify(endpoint);
                 option.textContent = `${endpoint.method} ${endpoint.path}`;
-                optgroup.appendChild(option);
+                select.appendChild(option);
             });
-            
-            endpointSelect.appendChild(optgroup);
+
+            select.addEventListener('change', (e) => {
+                if (e.target.value) {
+                    const endpoint = JSON.parse(e.target.value);
+                    selectEndpoint(endpoint);
+                }
+            });
+
+            dropdownContainer.appendChild(label);
+            dropdownContainer.appendChild(select);
+            apiDropdownsContainer.appendChild(dropdownContainer);
         }
+        console.log('API dropdowns created');
     }
-
-    endpointSelect.addEventListener('change', (e) => {
-        if (e.target.value) {
-            const endpoint = JSON.parse(e.target.value);
-            selectEndpoint(endpoint);
-        }
-    });
-
-    sendRequestBtn.addEventListener('click', sendRequest);
 
     function selectEndpoint(endpoint) {
         requestUrl.textContent = `${endpoint.method} ${endpoint.path}`;
@@ -177,8 +200,16 @@ function setupAPIInteraction() {
         }
     }
 
+    sendRequestBtn.addEventListener('click', sendRequest);
+
     function sendRequest() {
-        const selectedEndpoint = JSON.parse(endpointSelect.value);
+        const selectedDropdown = document.querySelector('.api-dropdown:not(:invalid)');
+        if (!selectedDropdown) {
+            showNotification('Please select an endpoint before sending a request.', 'error');
+            return;
+        }
+
+        const selectedEndpoint = JSON.parse(selectedDropdown.value);
         const url = selectedEndpoint.path;
         const method = selectedEndpoint.method;
         let body;

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lattis API Sandbox</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css', v=61) }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css', v=62) }}">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Fira+Code&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"></script>
@@ -39,9 +39,7 @@
             <div class="side-panel-content">
                 <div class="api-section">
                     <h3>API Endpoints</h3>
-                    <select id="endpoint-select" aria-label="Select API endpoint">
-                        <option value="">Select an endpoint</option>
-                    </select>
+                    <div id="api-dropdowns"></div>
                 </div>
                 <div class="request-section">
                     <h3>Request</h3>
@@ -82,6 +80,6 @@
             </ol>
         </div>
     </div>
-    <script src="{{ url_for('static', filename='js/main.js', v=61) }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js', v=62) }}"></script>
 </body>
 </html>
