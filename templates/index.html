@@ -4,20 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lattis API Sandbox</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css', v=63) }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css', v=64) }}">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Fira+Code&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css' rel='stylesheet' />
     <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
-    <script>const MAPBOX_ACCESS_TOKEN = '{{ MAPBOX_ACCESS_TOKEN }}';</script>
+    <script>
+        console.log('Mapbox script loaded');
+        const MAPBOX_ACCESS_TOKEN = '{{ MAPBOX_ACCESS_TOKEN }}';
+        console.log('MAPBOX_ACCESS_TOKEN:', MAPBOX_ACCESS_TOKEN);
+    </script>
 </head>
 <body>
     <div id="notification-area" aria-live="polite"></div>
     <header>
         <h1>Lattis API Sandbox</h1>
         <nav>
-            <button id="dark-mode-toggle" class="icon-button" title="Toggle Dark Mode" aria-label="Toggle Dark Mode">🌓</button>
+            <label class="switch" for="dark-mode-toggle">
+                <input type="checkbox" id="dark-mode-toggle">
+                <span class="slider round"></span>
+            </label>
             <button id="help-button" class="icon-button" title="Help" aria-label="Open Help">❔</button>
             <button id="settings-button" class="icon-button" title="Settings" aria-label="Open Settings">⚙️</button>
         </nav>
@@ -83,6 +90,14 @@
             </ol>
         </div>
     </div>
-    <script src="{{ url_for('static', filename='js/main.js', v=63) }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js', v=64) }}"></script>
+    <script>
+        console.log('All scripts loaded');
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOMContentLoaded event fired');
+            const mapElement = document.getElementById('fleet-map');
+            console.log('Map element:', mapElement);
+        });
+    </script>
 </body>
 </html>

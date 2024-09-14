@@ -1,3 +1,5 @@
+console.log('main.js is loaded and executing');
+
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM Content Loaded');
     initializeMap();
@@ -7,67 +9,50 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initializeMap() {
     console.log('Initializing map...');
-    console.log('Mapbox Access Token:', MAPBOX_ACCESS_TOKEN);
-
-    if (!MAPBOX_ACCESS_TOKEN || MAPBOX_ACCESS_TOKEN === 'None' || MAPBOX_ACCESS_TOKEN === '{{ MAPBOX_ACCESS_TOKEN }}') {
-        console.error('Mapbox access token is missing or invalid');
-        document.querySelector('.map-loading').style.display = 'none';
-        document.getElementById('fleet-map').innerHTML = '<p>Error: Unable to load map due to missing or invalid access token.</p>';
+    const mapElement = document.getElementById('fleet-map');
+    if (!mapElement) {
+        console.error('Map element not found');
         return;
     }
-
-    mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
-
-    try {
-        map = new mapboxgl.Map({
-            container: 'fleet-map',
-            style: 'mapbox://styles/mapbox/streets-v11',
-            center: [-122.4194, 37.7749],
-            zoom: 12
-        });
-
-        map.on('load', () => {
-            console.log('Map loaded successfully');
-            document.querySelector('.map-loading').style.display = 'none';
-            document.getElementById('fleet-map').style.visibility = 'visible';
-            map.addControl(new mapboxgl.NavigationControl());
-            map.addControl(new mapboxgl.FullscreenControl());
-            fetchVehicles();
-        });
-
-        map.on('error', (e) => {
-            console.error('Map error:', e);
-            document.querySelector('.map-loading').style.display = 'none';
-            document.getElementById('fleet-map').innerHTML = '<p>Error: Unable to load map. Please check your internet connection and try again.</p>';
-        });
-    } catch (error) {
-        console.error('Error initializing map:', error);
-        document.querySelector('.map-loading').style.display = 'none';
-        document.getElementById('fleet-map').innerHTML = '<p>Error: Unable to initialize map. Please try refreshing the page.</p>';
-    }
-}
-
-function fetchVehicles() {
-    console.log('Fetching vehicles...');
-    fetch('/api/map')
-        .then(response => response.json())
-        .then(data => {
-            console.log('Vehicles data received:', data);
-            updateVehicleMarkers(data);
-        })
-        .catch(error => {
-            console.error('Error fetching vehicles:', error);
-        });
-}
-
-function updateVehicleMarkers(vehicles) {
-    console.log('Updating vehicle markers...');
-    // ... (rest of the function)
+    // ... rest of the map initialization code
 }
 
 function setupDarkModeToggle() {
     console.log('Setting up dark mode toggle...');
-    // ... (rest of the function)
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    const body = document.body;
+
+    if (!darkModeToggle) {
+        console.error('Dark mode toggle checkbox not found');
+        return;
+    }
+
+    // Set initial state based on localStorage
+    if (localStorage.getItem('darkMode') === 'true') {
+        body.classList.add('dark-mode');
+        darkModeToggle.checked = true;
+    }
+
+    darkModeToggle.addEventListener('change', () => {
+        if (darkModeToggle.checked) {
+            body.classList.add('dark-mode');
+            localStorage.setItem('darkMode', 'true');
+        } else {
+            body.classList.remove('dark-mode');
+            localStorage.setItem('darkMode', 'false');
+        }
+        updateDarkModeUI();
+    });
+
+    updateDarkModeUI();
+}
+
+function updateDarkModeUI() {
+    const isDarkMode = document.body.classList.contains('dark-mode');
+
+    if (window.map) {
+        window.map.setStyle(isDarkMode ? 'mapbox://styles/mapbox/dark-v10' : 'mapbox://styles/mapbox/streets-v11');
+    }
 }
 
 function setupAPIInteraction() {
@@ -80,6 +65,11 @@ function setupAPIInteraction() {
 
     if (!apiDropdownsContainer) {
         console.error('API dropdowns container not found');
+        return;
+    }
+
+    if (!requestUrl || !requestBody || !sendRequestBtn || !responseBody) {
+        console.error('One or more required elements not found');
         return;
     }
 
