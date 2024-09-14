@@ -6,7 +6,8 @@ from api import fleet, maintenance, rebalancing, user, reporting, integration, f
 import os
 import logging
 from dotenv import load_dotenv
-from flask_wtf.csrf import CSRFProtect
+# Remove the CSRF import
+# from flask_wtf.csrf import CSRFProtect
 
 load_dotenv()
 
@@ -40,8 +41,10 @@ def create_app():
     app.register_blueprint(geofencing.bp)
     app.register_blueprint(pricing.bp)
 
-    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
-    csrf = CSRFProtect(app)
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key')  # Provide a default secret key
+    
+    # Remove CSRF protection
+    # csrf = CSRFProtect(app)
 
     @app.route('/')
     def index():
