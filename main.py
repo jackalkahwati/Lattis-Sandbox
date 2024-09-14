@@ -119,26 +119,45 @@ def create_app():
         ]
         return jsonify(vehicles)
 
-    # Right Panel (Query Information & Response Display)
-    @app.route('/api/query', methods=['POST'])
-    def execute_query():
-        # Get the request data
-        data = request.get_json()
-        endpoint = data.get('endpoint')
-        params = data.get('params', {})
-        headers = data.get('headers', {})
+    # Add missing API routes
+    @app.route('/api/v1/fleet/vehicles', methods=['GET'])
+    def get_fleet_vehicles():
+        # Implement logic to fetch and return fleet vehicles
+        vehicles = [
+            {'id': 1, 'name': 'Vehicle 1', 'type': 'car', 'status': 'active'},
+            {'id': 2, 'name': 'Vehicle 2', 'type': 'bike', 'status': 'maintenance'},
+        ]
+        return jsonify(vehicles)
 
-        # Execute the API request
-        response = make_api_request(endpoint, params, headers)
+    @app.route('/api/v1/fleet/vehicles', methods=['POST'])
+    def create_fleet_vehicle():
+        # Implement logic to create a new fleet vehicle
+        data = request.json
+        # In a real application, you would save this data to a database
+        return jsonify({'message': 'Vehicle created successfully', 'data': data}), 201
 
-        return jsonify(response)
+    @app.route('/api/v1/maintenance/tasks', methods=['POST'])
+    def create_maintenance_task():
+        # Implement logic to create a new maintenance task
+        data = request.json
+        # In a real application, you would save this data to a database
+        return jsonify({'message': 'Maintenance task created successfully', 'data': data}), 201
 
-    # Helper function to make API requests
-    def make_api_request(endpoint, params, headers):
-        # Implement the logic to make the actual API request
-        # based on the endpoint, params, and headers
-        # Return the response data
-        return {'data': 'Sample response data'}
+    @app.route('/api/v1/rebalancing/task', methods=['POST'])
+    def create_rebalancing_task():
+        # Implement logic to create a new rebalancing task
+        data = request.json
+        # In a real application, you would save this data to a database
+        return jsonify({'message': 'Rebalancing task created successfully', 'data': data}), 201
+
+    @app.route('/api/v1/user/activity', methods=['GET'])
+    def get_user_activity():
+        # Implement logic to fetch and return user activity
+        activities = [
+            {'id': 1, 'user_id': 1, 'action': 'login', 'timestamp': '2023-09-13T12:00:00Z'},
+            {'id': 2, 'user_id': 1, 'action': 'rent_vehicle', 'timestamp': '2023-09-13T12:15:00Z'},
+        ]
+        return jsonify(activities)
 
     return app
 
