@@ -14,7 +14,43 @@ function initializeMap() {
         console.error('Map element not found');
         return;
     }
-    // ... rest of the map initialization code
+
+    if (!mapboxgl.supported()) {
+        console.error('Mapbox GL JS is not supported by this browser');
+        mapElement.innerHTML = 'Your browser does not support Mapbox GL JS';
+        return;
+    }
+
+    if (!MAPBOX_ACCESS_TOKEN) {
+        console.error('Mapbox access token is not set');
+        mapElement.innerHTML = 'Error: Mapbox access token is not set';
+        return;
+    }
+
+    mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
+
+    try {
+        window.map = new mapboxgl.Map({
+            container: 'fleet-map',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [-122.4194, 37.7749], // San Francisco coordinates
+            zoom: 12
+        });
+
+        window.map.on('load', () => {
+            console.log('Map loaded successfully');
+            document.querySelector('.map-loading').style.display = 'none';
+            updateDarkModeUI(); // Apply dark mode if necessary
+        });
+
+        window.map.on('error', (e) => {
+            console.error('Map error:', e);
+            mapElement.innerHTML = 'An error occurred while loading the map';
+        });
+    } catch (error) {
+        console.error('Error initializing map:', error);
+        mapElement.innerHTML = 'An error occurred while initializing the map';
+    }
 }
 
 function setupDarkModeToggle() {

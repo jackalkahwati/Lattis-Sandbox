@@ -34,26 +34,7 @@ def create_app():
             app.logger.error("MAPBOX_ACCESS_TOKEN is not set in the environment variables")
         return render_template('index.html', MAPBOX_ACCESS_TOKEN=mapbox_access_token)
 
-    @app.errorhandler(404)
-    def not_found(error):
-        logger.error(f"404 error: {error}")
-        return jsonify({"error": "Not found", "message": str(error)}), 404
-
-    @app.errorhandler(500)
-    def server_error(error):
-        logger.error(f"500 error: {error}")
-        return jsonify({"error": "Internal server error", "message": str(error)}), 500
-
-    @app.errorhandler(Exception)
-    def handle_exception(e):
-        logger.error(f"Unhandled exception: {str(e)}")
-        return jsonify({"error": "An unexpected error occurred", "message": str(e)}), 500
-
-    @app.route('/health')
-    def health_check():
-        return jsonify({"status": "healthy"}), 200
-
-    @app.route('/api/config', methods=['GET'])
+    @app.route('/api/config')
     def get_api_config():
         api_config = {
             'endpoints': {
@@ -95,103 +76,22 @@ def create_app():
         }
         return jsonify(api_config)
 
-    @app.route('/api/map', methods=['GET'])
-    def get_map_data():
-        return jsonify(data_store.get_vehicles())
+    @app.errorhandler(404)
+    def not_found(error):
+        logger.error(f"404 error: {error}")
+        return jsonify({"error": "Not found", "message": str(error)}), 404
 
-    # User Authentication & Authorization
-    @app.route('/api/v1/auth/register', methods=['POST'])
-    def register():
-        return jsonify(data_store.register_user(request.json)), 201
+    @app.errorhandler(500)
+    def server_error(error):
+        logger.error(f"500 error: {error}")
+        return jsonify({"error": "Internal server error", "message": str(error)}), 500
 
-    @app.route('/api/v1/auth/login', methods=['POST'])
-    def login():
-        return jsonify(data_store.login_user(request.json)), 200
+    @app.errorhandler(Exception)
+    def handle_exception(e):
+        logger.error(f"Unhandled exception: {str(e)}")
+        return jsonify({"error": "An unexpected error occurred", "message": str(e)}), 500
 
-    @app.route('/api/v1/auth/logout', methods=['POST'])
-    def logout():
-        return jsonify(data_store.logout_user()), 200
-
-    @app.route('/api/v1/auth/me', methods=['GET'])
-    def get_current_user():
-        return jsonify(data_store.get_current_user()), 200
-
-    # Vehicle Management
-    @app.route('/api/v1/vehicles', methods=['GET'])
-    def get_vehicles():
-        return jsonify(data_store.get_vehicles())
-
-    @app.route('/api/v1/vehicles', methods=['POST'])
-    def create_vehicle():
-        return jsonify(data_store.add_vehicle(request.json)), 201
-
-    @app.route('/api/v1/vehicles/<int:id>', methods=['GET'])
-    def get_vehicle(id):
-        return jsonify(data_store.get_vehicle(id))
-
-    @app.route('/api/v1/vehicles/<int:id>', methods=['PUT'])
-    def update_vehicle(id):
-        return jsonify(data_store.update_vehicle(id, request.json))
-
-    @app.route('/api/v1/vehicles/<int:id>', methods=['DELETE'])
-    def delete_vehicle(id):
-        return jsonify(data_store.delete_vehicle(id))
-
-    # Fleet Management
-    @app.route('/api/v1/fleets', methods=['GET'])
-    def get_fleets():
-        return jsonify(data_store.get_fleets())
-
-    @app.route('/api/v1/fleets', methods=['POST'])
-    def create_fleet():
-        return jsonify(data_store.add_fleet(request.json)), 201
-
-    @app.route('/api/v1/fleets/<int:id>', methods=['GET'])
-    def get_fleet(id):
-        return jsonify(data_store.get_fleet(id))
-
-    @app.route('/api/v1/fleets/<int:id>', methods=['PUT'])
-    def update_fleet(id):
-        return jsonify(data_store.update_fleet(id, request.json))
-
-    @app.route('/api/v1/fleets/<int:id>', methods=['DELETE'])
-    def delete_fleet(id):
-        return jsonify(data_store.delete_fleet(id))
-
-    # Trip Management
-    @app.route('/api/v1/trips', methods=['GET'])
-    def get_trips():
-        return jsonify(data_store.get_trips())
-
-    @app.route('/api/v1/trips', methods=['POST'])
-    def create_trip():
-        return jsonify(data_store.add_trip(request.json)), 201
-
-    @app.route('/api/v1/trips/<int:id>', methods=['GET'])
-    def get_trip(id):
-        return jsonify(data_store.get_trip(id))
-
-    @app.route('/api/v1/trips/<int:id>', methods=['PUT'])
-    def update_trip(id):
-        return jsonify(data_store.update_trip(id, request.json))
-
-    # Maintenance
-    @app.route('/api/v1/maintenance', methods=['GET'])
-    def get_maintenance():
-        return jsonify(data_store.get_maintenance())
-
-    @app.route('/api/v1/maintenance', methods=['POST'])
-    def create_maintenance():
-        return jsonify(data_store.add_maintenance(request.json)), 201
-
-    # Reporting
-    @app.route('/api/v1/reports', methods=['GET'])
-    def get_reports():
-        return jsonify(data_store.get_reports())
-
-    @app.route('/api/v1/reports', methods=['POST'])
-    def create_report():
-        return jsonify(data_store.add_report(request.json)), 201
+    # ... rest of your routes ...
 
     return app
 
