@@ -21,8 +21,8 @@ body {
 }
 
 header {
-    background: var(--primary-color);
-    color: #ffffff;
+    background-color: var(--card-background);
+    color: var(--text-color);
     padding: 1rem;
     display: flex;
     justify-content: space-between;
@@ -140,14 +140,30 @@ header h1 {
     margin-bottom: 1.5rem;
 }
 
-#endpoint-select {
+.api-dropdown-container {
+    margin-bottom: 1rem;
+}
+
+.api-dropdown-container label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.api-dropdown {
     width: 100%;
-    padding: 12px;
+    padding: 10px;
     border: 1px solid #ccc;
     border-radius: var(--border-radius);
     background-color: white;
-    font-size: 16px;
+    font-size: 14px;
     transition: var(--transition);
+}
+
+.api-dropdown:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(63, 81, 181, 0.2);
 }
 
 .code-block {
@@ -219,7 +235,7 @@ header h1 {
     font-size: 1.5rem;
     cursor: pointer;
     padding: 0.5rem;
-    color: white;
+    color: var(--text-color);
     transition: var(--transition);
 }
 
@@ -264,7 +280,7 @@ body.dark-mode .code-block {
 }
 
 body.dark-mode #query-input,
-body.dark-mode #endpoint-select {
+body.dark-mode .api-dropdown {
     background-color: #3a3a3a;
     color: #f4f4f4;
     border-color: #555;

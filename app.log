@@ -1,0 +1,83 @@
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 809-249-995
+DEBUG:main:Rendering template: templates/index.html
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:10:30] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:10:30] "[36mGET /static/css/style.css?v=62 HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:10:30] "[36mGET /static/js/main.js?v=62 HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:10:30] "GET /api/config HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:10:30] "GET /api/map HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:10:35] "GET /api/v1/fleets HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:10:37] "GET /api/v1/fleets HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:10:40] "[35m[1mPOST /api/v1/fleets HTTP/1.1[0m" 201 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:10:45] "GET /api/v1/fleets HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:10:49] "GET /api/v1/fleets HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:10:50] "GET /api/v1/fleets HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:10:54] "GET /api/v1/fleets HTTP/1.1" 200 -
+INFO:werkzeug: * Detected change in '/Users/jackal-kahwati/Downloads/SwiftAttachmentsManager/main.py', reloading
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 809-249-995
+INFO:werkzeug: * Detected change in '/Users/jackal-kahwati/Downloads/SwiftAttachmentsManager/data_store.py', reloading
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 809-249-995
+DEBUG:main:Rendering template: templates/index.html
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:20:06] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:20:06] "[36mGET /static/css/style.css?v=62 HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:20:06] "[36mGET /static/js/main.js?v=62 HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:20:06] "GET /api/config HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:20:07] "GET /api/map HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:20:18] "GET /api/v1/fleets HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:20:22] "[35m[1mPOST /api/v1/fleets HTTP/1.1[0m" 201 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:20:23] "[35m[1mPOST /api/v1/fleets HTTP/1.1[0m" 201 -
+ERROR:main:404 error: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:20:29] "[33mPUT /api/v1/fleets/{id} HTTP/1.1[0m" 404 -
+ERROR:main:404 error: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:20:32] "[33mPUT /api/v1/fleets/{id} HTTP/1.1[0m" 404 -
+ERROR:main:404 error: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:20:36] "[33mDELETE /api/v1/fleets/{id} HTTP/1.1[0m" 404 -
+DEBUG:main:Rendering template: templates/index.html
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:23:12] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:23:12] "GET /static/js/main.js?v=63 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:23:12] "GET /static/css/style.css?v=63 HTTP/1.1" 200 -
+DEBUG:main:Rendering template: templates/index.html
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:23:17] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:23:17] "[36mGET /static/js/main.js?v=63 HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:23:17] "[36mGET /static/css/style.css?v=63 HTTP/1.1[0m" 304 -
+DEBUG:main:Rendering template: templates/index.html
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:25:19] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:25:19] "GET /static/css/style.css?v=63 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:25:19] "[36mGET /static/js/main.js?v=63 HTTP/1.1[0m" 304 -
+DEBUG:main:Rendering template: templates/index.html
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:25:49] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:25:49] "[36mGET /static/css/style.css?v=63 HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:25:49] "[36mGET /static/js/main.js?v=63 HTTP/1.1[0m" 304 -
+DEBUG:main:Rendering template: templates/index.html
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:26:39] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:26:39] "[36mGET /static/css/style.css?v=63 HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:26:39] "[36mGET /static/js/main.js?v=63 HTTP/1.1[0m" 304 -
+DEBUG:main:Rendering template: templates/index.html
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:26:39] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:26:39] "[36mGET /static/css/style.css?v=63 HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:26:39] "[36mGET /static/js/main.js?v=63 HTTP/1.1[0m" 304 -
+DEBUG:main:Rendering template: templates/index.html
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:27:24] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:27:24] "[36mGET /static/css/style.css?v=63 HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:27:24] "[36mGET /static/js/main.js?v=63 HTTP/1.1[0m" 304 -
+DEBUG:main:Rendering template: templates/index.html
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:27:40] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:27:40] "[36mGET /static/css/style.css?v=63 HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:27:40] "[36mGET /static/js/main.js?v=63 HTTP/1.1[0m" 304 -
+DEBUG:main:Rendering template: templates/index.html
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:27:41] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:27:41] "[36mGET /static/css/style.css?v=63 HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:27:41] "[36mGET /static/js/main.js?v=63 HTTP/1.1[0m" 304 -
+DEBUG:main:Rendering template: templates/index.html
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:29:21] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:29:21] "[36mGET /static/css/style.css?v=63 HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:29:21] "GET /static/js/main.js?v=63 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:29:21] "GET /api/config HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:29:21] "GET /api/map HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:29:27] "GET /api/v1/fleets HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:29:31] "GET /api/v1/fleets HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:29:32] "GET /api/v1/fleets HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:29:35] "GET /api/v1/fleets HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [14/Sep/2024 00:29:45] "GET /api/v1/fleets HTTP/1.1" 200 -

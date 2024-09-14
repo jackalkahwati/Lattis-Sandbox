@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lattis API Sandbox</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css', v=62) }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css', v=63) }}">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Fira+Code&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"></script>
@@ -73,13 +73,16 @@
             <button class="close" aria-label="Close help modal">&times;</button>
             <h2>How to Use the Lattis API Sandbox</h2>
             <ol>
-                <li>Enter your query in the input box above the map.</li>
-                <li>Click on the map to interact with specific locations.</li>
-                <li>Use the side panel to access detailed API endpoints and responses.</li>
-                <li>Configure your API token in the Settings menu.</li>
+                <li>Select an API endpoint from the dropdown in the sidebar.</li>
+                <li>The Request URL and Request Body will be populated automatically.</li>
+                <li>Modify the Request Body if needed for POST or PUT requests.</li>
+                <li>Click the "Send Request" button to make the API call.</li>
+                <li>The response will be displayed in the Response section.</li>
+                <li>Use the map to visualize vehicle locations and interact with specific locations.</li>
+                <li>Enter queries in the input box above the map for natural language interactions.</li>
             </ol>
         </div>
     </div>
-    <script src="{{ url_for('static', filename='js/main.js', v=62) }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js', v=63) }}"></script>
 </body>
 </html>
