@@ -119,6 +119,7 @@ function setupAPIInteraction() {
     const requestUrl = document.getElementById('request-url');
     const requestBody = document.getElementById('request-body');
     const sendRequestBtn = document.getElementById('send-request-btn');
+    const responseBody = document.getElementById('response-body');
 
     const endpoints = [
         { method: 'GET', path: '/api/v1/fleet/vehicles' },
@@ -144,8 +145,34 @@ function setupAPIInteraction() {
     });
 
     sendRequestBtn.addEventListener('click', () => {
-        // Implement the send request functionality here
-        console.log('Send request clicked');
+        const selectedEndpoint = JSON.parse(endpointSelect.value);
+        const url = selectedEndpoint.path;
+        const method = selectedEndpoint.method;
+        let body;
+
+        try {
+            body = JSON.parse(requestBody.textContent);
+        } catch (error) {
+            showNotification('Invalid JSON in request body.', 'error');
+            return;
+        }
+
+        fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: method !== 'GET' ? JSON.stringify(body) : undefined
+        })
+        .then(response => response.json())
+        .then(data => {
+            responseBody.textContent = JSON.stringify(data, null, 2);
+            showNotification('Request completed successfully.', 'success');
+        })
+        .catch(error => {
+            responseBody.textContent = `Error: ${error.message}`;
+            showNotification('An error occurred while sending the request.', 'error');
+        });
     });
 }
 
