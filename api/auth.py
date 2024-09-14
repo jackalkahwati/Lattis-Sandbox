@@ -15,6 +15,7 @@ class UserSchema(Schema):
     username = fields.String(required=True)
     password = fields.String(required=True)
     email = fields.Email(required=True)
+    role = fields.String(required=False)
 
 class LoginSchema(Schema):
     username = fields.String(required=True)
@@ -24,46 +25,8 @@ class RoleSchema(Schema):
     name = fields.String(required=True)
     description = fields.String()
 
-def generate_test_token():
-    return secrets.token_urlsafe(32)
-
-@bp.route('/generate-test-token', methods=['POST'])
-def create_test_token():
-    """
-    Generate a test API Access Token
-    ---
-    responses:
-      200:
-        description: Test token generated successfully
-      500:
-        description: Internal server error
-    """
-    try:
-        test_token = generate_test_token()
-        return jsonify({"test_token": test_token}), 200
-    except Exception as e:
-        logger.error(f"Error in create_test_token: {str(e)}")
-        return jsonify({"error": "An error occurred while generating the test token"}), 500
-
 @bp.route('/register', methods=['POST'])
 def register():
-    """
-    Register a new user
-    ---
-    parameters:
-      - name: user
-        in: body
-        required: true
-        schema:
-          $ref: '#/definitions/User'
-    responses:
-      201:
-        description: User registered successfully
-      400:
-        description: Invalid input
-      500:
-        description: Internal server error
-    """
     try:
         schema = UserSchema()
         data = schema.load(request.json)
@@ -73,6 +36,11 @@ def register():
     try:
         new_user = User(username=data['username'], email=data['email'])
         new_user.set_password(data['password'])
+        if 'role' in data:
+            role = Role.query.filter_by(name=data['role']).first()
+            if not role:
+                return jsonify({"error": "Invalid role"}), 400
+            new_user.role = role
         db.session.add(new_user)
         db.session.commit()
         return jsonify({"message": "User registered successfully", "user_id": new_user.id}), 201
@@ -83,23 +51,6 @@ def register():
 
 @bp.route('/login', methods=['POST'])
 def login():
-    """
-    Login a user
-    ---
-    parameters:
-      - name: credentials
-        in: body
-        required: true
-        schema:
-          $ref: '#/definitions/Login'
-    responses:
-      200:
-        description: User logged in successfully
-      400:
-        description: Invalid credentials
-      500:
-        description: Internal server error
-    """
     try:
         schema = LoginSchema()
         data = schema.load(request.json)
@@ -110,7 +61,7 @@ def login():
         user = User.query.filter_by(username=data['username']).first()
         if user and user.check_password(data['password']):
             # In a real application, you would generate and return a token here
-            return jsonify({"message": "User logged in successfully", "user_id": user.id}), 200
+            return jsonify({"message": "User logged in successfully", "user_id": user.id, "role": user.role.name if user.role else None}), 200
         else:
             return jsonify({"error": "Invalid credentials"}), 400
     except SQLAlchemyError as e:
@@ -119,31 +70,11 @@ def login():
 
 @bp.route('/logout', methods=['POST'])
 def logout():
-    """
-    Logout a user
-    ---
-    responses:
-      200:
-        description: User logged out successfully
-      500:
-        description: Internal server error
-    """
     # In a real application, you would invalidate the user's token here
     return jsonify({"message": "User logged out successfully"}), 200
 
 @bp.route('/me', methods=['GET'])
 def get_current_user():
-    """
-    Get details of the currently logged-in user
-    ---
-    responses:
-      200:
-        description: Current user details
-      401:
-        description: Unauthorized
-      500:
-        description: Internal server error
-    """
     # In a real application, you would get the user from the token
     # For this example, we'll just return a mock user
     try:
@@ -160,15 +91,6 @@ def get_current_user():
 
 @bp.route('/roles', methods=['GET'])
 def get_roles():
-    """
-    Retrieve the list of user roles
-    ---
-    responses:
-      200:
-        description: List of user roles
-      500:
-        description: Internal server error
-    """
     try:
         roles = Role.query.all()
         return jsonify([{"id": role.id, "name": role.name, "description": role.description} for role in roles]), 200
@@ -178,23 +100,6 @@ def get_roles():
 
 @bp.route('/roles', methods=['POST'])
 def create_role():
-    """
-    Create a new user role
-    ---
-    parameters:
-      - name: role
-        in: body
-        required: true
-        schema:
-          $ref: '#/definitions/Role'
-    responses:
-      201:
-        description: Role created successfully
-      400:
-        description: Invalid input
-      500:
-        description: Internal server error
-    """
     try:
         schema = RoleSchema()
         data = schema.load(request.json)
@@ -211,4 +116,59 @@ def create_role():
         db.session.rollback()
         return jsonify({"error": "An error occurred while creating the role"}), 500
 
-# Add more endpoints for updating and deleting roles, and assigning/removing roles from users
+@bp.route('/roles/<int:role_id>', methods=['PUT'])
+def update_role(role_id):
+    try:
+        schema = RoleSchema()
+        data = schema.load(request.json)
+    except ValidationError as err:
+        return jsonify({"error": "Invalid input", "details": err.messages}), 400
+
+    try:
+        role = Role.query.get(role_id)
+        if not role:
+            return jsonify({"error": "Role not found"}), 404
+        role.name = data['name']
+        role.description = data.get('description', role.description)
+        db.session.commit()
+        return jsonify({"message": "Role updated successfully"}), 200
+    except SQLAlchemyError as e:
+        logger.error(f"Database error in update_role: {str(e)}")
+        db.session.rollback()
+        return jsonify({"error": "An error occurred while updating the role"}), 500
+
+@bp.route('/roles/<int:role_id>', methods=['DELETE'])
+def delete_role(role_id):
+    try:
+        role = Role.query.get(role_id)
+        if not role:
+            return jsonify({"error": "Role not found"}), 404
+        db.session.delete(role)
+        db.session.commit()
+        return jsonify({"message": "Role deleted successfully"}), 200
+    except SQLAlchemyError as e:
+        logger.error(f"Database error in delete_role: {str(e)}")
+        db.session.rollback()
+        return jsonify({"error": "An error occurred while deleting the role"}), 500
+
+@bp.route('/users/<int:user_id>/roles/<int:role_id>', methods=['POST', 'DELETE'])
+def manage_user_role(user_id, role_id):
+    try:
+        user = User.query.get(user_id)
+        role = Role.query.get(role_id)
+        if not user or not role:
+            return jsonify({"error": "User or role not found"}), 404
+
+        if request.method == 'POST':
+            user.role = role
+            message = "Role assigned to user successfully"
+        else:  # DELETE
+            user.role = None
+            message = "Role removed from user successfully"
+
+        db.session.commit()
+        return jsonify({"message": message}), 200
+    except SQLAlchemyError as e:
+        logger.error(f"Database error in manage_user_role: {str(e)}")
+        db.session.rollback()
+        return jsonify({"error": "An error occurred while managing user role"}), 500

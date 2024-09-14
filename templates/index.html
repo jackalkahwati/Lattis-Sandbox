@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lattis API Sandbox</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css', v=41) }}">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/default.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css', v=61) }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Fira+Code&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css' rel='stylesheet' />
     <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
@@ -19,92 +19,69 @@
         <nav>
             <button id="dark-mode-toggle" class="icon-button" title="Toggle Dark Mode" aria-label="Toggle Dark Mode">🌓</button>
             <button id="help-button" class="icon-button" title="Help" aria-label="Open Help">❔</button>
+            <button id="settings-button" class="icon-button" title="Settings" aria-label="Open Settings">⚙️</button>
         </nav>
     </header>
     <main class="container">
-        <div class="panel-container">
-            <div class="left-panel">
-                <h2>API Configuration</h2>
-                <div class="token-container">
-                    <label for="access-token" class="visually-hidden">API Access Token</label>
-                    <input type="text" id="access-token" placeholder="Enter your API access token" title="Enter your Lattis API access token">
-                    <button id="generate-test-token-btn" title="Generate a test API Access Token">Generate Test Token</button>
-                </div>
+        <div class="map-container">
+            <div id="fleet-map" aria-label="Interactive map showing fleet locations"></div>
+            <div class="map-loading">
+                <div class="map-loading-spinner"></div>
+                <p>Loading map...</p>
+            </div>
+            <div class="query-container">
+                <input type="text" id="query-input" placeholder="Enter your query..." aria-label="Enter your query">
+                <button id="send-query-btn">Send</button>
+            </div>
+        </div>
+        <div class="side-panel">
+            <button class="side-panel-toggle" aria-label="Toggle side panel">◀</button>
+            <div class="side-panel-content">
                 <div class="api-section">
-                    <h2>API Endpoints</h2>
-                    <input type="text" id="endpoint-search" placeholder="Search endpoints...">
-                    <div class="endpoint-list" id="endpoint-list">
-                        <!-- Endpoint items will be dynamically added here -->
+                    <h3>API Endpoints</h3>
+                    <select id="endpoint-select" aria-label="Select API endpoint">
+                        <option value="">Select an endpoint</option>
+                    </select>
+                </div>
+                <div class="request-section">
+                    <h3>Request</h3>
+                    <div id="request-url" class="code-block" aria-label="Request URL"></div>
+                    <div id="request-body" class="code-block" contenteditable="true" spellcheck="false" aria-label="Request body (editable)"></div>
+                    <button id="send-request-btn">Send Request</button>
+                </div>
+                <div class="response-section">
+                    <h3>Response</h3>
+                    <div class="response-container">
+                        <pre><code id="response-body" class="json" aria-label="API response"></code></pre>
+                        <div id="loading-spinner" class="spinner" aria-hidden="true"></div>
                     </div>
-                </div>
-                <details>
-                    <summary>Advanced Options</summary>
-                    <div id="advanced-options">
-                        <label for="request-timeout" title="Set the timeout for API requests">Request Timeout (ms):</label>
-                        <input type="number" id="request-timeout" value="5000" min="1000" step="1000">
-                        <label for="response-format" title="Choose the response format">Response Format:</label>
-                        <select id="response-format">
-                            <option value="json">JSON</option>
-                            <option value="xml">XML</option>
-                        </select>
-                    </div>
-                </details>
-            </div>
-            <div class="right-panel">
-                <h2>API Request</h2>
-                <div id="request-url" class="code-block"></div>
-                <div id="request-body" class="code-block" contenteditable="true" spellcheck="false"></div>
-                <button id="send-request-btn">Send Request</button>
-                <h2>API Response</h2>
-                <div class="response-container">
-                    <pre><code id="response-body" class="json"></code></pre>
-                    <div id="loading-spinner" class="spinner" aria-hidden="true"></div>
-                </div>
-            </div>
-        </div>
-        <div class="central-section">
-            <h2>Interactive Fleet Map</h2>
-            <div id="fleet-map" style="width: 100%; height: 400px;" aria-label="Interactive map showing fleet locations"></div>
-        </div>
-        <div class="dashboard-section">
-            <h2>Dashboard</h2>
-            <div class="dashboard-grid">
-                <div class="dashboard-card">
-                    <h3>Total Vehicles</h3>
-                    <p id="total-vehicles">Loading...</p>
-                </div>
-                <div class="dashboard-card">
-                    <h3>Active Trips</h3>
-                    <p id="active-trips">Loading...</p>
-                </div>
-                <div class="dashboard-card">
-                    <h3>Maintenance Tasks</h3>
-                    <p id="maintenance-tasks">Loading...</p>
-                </div>
-                <div class="dashboard-card">
-                    <h3>Revenue Today</h3>
-                    <p id="revenue-today">Loading...</p>
                 </div>
             </div>
         </div>
     </main>
-    <footer>
-        <p>&copy; 2024 Lattis API Sandbox. All rights reserved.</p>
-    </footer>
+    <div id="settings-modal" class="modal" aria-hidden="true">
+        <div class="modal-content">
+            <button class="close" aria-label="Close settings modal">&times;</button>
+            <h2>Settings</h2>
+            <div class="token-container">
+                <label for="access-token">API Access Token</label>
+                <input type="text" id="access-token" placeholder="Enter your API access token" title="Enter your Lattis API access token">
+                <button id="generate-test-token-btn" title="Generate a test API Access Token">Generate Test Token</button>
+            </div>
+        </div>
+    </div>
     <div id="help-modal" class="modal" aria-hidden="true">
         <div class="modal-content">
             <button class="close" aria-label="Close help modal">&times;</button>
             <h2>How to Use the Lattis API Sandbox</h2>
             <ol>
-                <li>Enter your API access token or generate a test token.</li>
-                <li>Select an API endpoint from the list or use the search feature.</li>
-                <li>Fill in any required parameters in the request body.</li>
-                <li>Click "Send Request" to test the API.</li>
-                <li>View the response in the right panel.</li>
-                <li>Explore the interactive fleet map and dashboard for more insights.</li>
+                <li>Enter your query in the input box above the map.</li>
+                <li>Click on the map to interact with specific locations.</li>
+                <li>Use the side panel to access detailed API endpoints and responses.</li>
+                <li>Configure your API token in the Settings menu.</li>
             </ol>
         </div>
     </div>
-    <script src="{{ url_for('static', filename='js/main.js', v=41) }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js', v=61) }}"></script>
 </body>
 </html>

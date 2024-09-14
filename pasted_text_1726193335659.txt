@@ -1,0 +1,47 @@
+Here's an example of how the map should change dynamically based on interactions with the APIs in the context of the interface:
+Scenario 1: Vehicle Location Query (Fleet Management)
+API Interaction:
+You use the GET /api/v1/fleet/vehicles endpoint to retrieve a list of all active vehicles in the fleet.
+Expected Map Change:
+After sending the request, the map should update to display the locations of all vehicles as markers. Each marker represents a vehicle and could include information such as:
+Vehicle ID as the label for each marker.
+Vehicle status (e.g., in service, out of service) indicated by color (green for active, red for inactive).
+Example Flow:
+The user sends a GET request to the fleet API.
+The map refreshes and shows 150 vehicle markers across the map in San Francisco.
+Each marker is clickable, and clicking on a vehicle provides details (like vehicle ID, maintenance status, and current task) in a popup or sidebar.
+Scenario 2: Creating a Maintenance Task (Vehicle Maintenance)
+API Interaction:
+You use the POST /api/v1/maintenance/tasks endpoint to create a new maintenance task (e.g., Oil Change for a specific vehicle).
+Expected Map Change:
+Once the maintenance task is successfully created, the map should highlight the vehicle that requires maintenance, possibly by changing the color of its marker to indicate it needs attention.
+A new task icon (such as a wrench) might appear next to the vehicle marker to show it’s scheduled for maintenance.
+Example Flow:
+The user sends a POST request to create an oil change task for Vehicle ID 1.
+The map updates and the vehicle marker for Vehicle ID 1 changes to a yellow marker with a wrench icon, indicating the maintenance task is pending.
+The API response can be displayed below the map, confirming the maintenance task creation.
+Scenario 3: Rebalancing Task (Station Operations)
+API Interaction:
+You use the POST /api/v1/rebalancing/task endpoint to schedule a rebalancing task for stations that need more vehicles.
+Expected Map Change:
+The map updates to display the stations where rebalancing is required. A station icon (or cluster of vehicles) is marked, and vehicles that are assigned for rebalancing are highlighted.
+A route line is drawn between vehicles and stations to indicate where rebalancing is scheduled to occur.
+Example Flow:
+The user schedules a rebalancing task for a station that is low on vehicles.
+The map highlights the stations that need rebalancing, with markers appearing at each station location.
+Vehicles assigned for rebalancing have lines connecting them to the respective stations, showing the routes they will follow.
+Scenario 4: Filtering Active Trips (Trip Monitoring)
+API Interaction:
+You use the GET /api/v1/user/activity endpoint to get a list of active trips in real-time.
+Expected Map Change:
+The map updates to show only the vehicles that are currently active in trips. A line is drawn between the vehicle’s start location and its current position.
+Active trips could be represented by moving markers or animated icons showing their current location and movement.
+Example Flow:
+The user sends a GET request to retrieve active trip data.
+The map updates to show only 42 active vehicles, each with a line tracing the trip route.
+The vehicle markers move across the map in real-time to reflect current positions.
+Additional Map Enhancements:
+Real-time updates: Whenever an API query is sent, the map dynamically updates based on the data without needing to refresh the entire page.
+Interactive markers: Clicking on markers should show more detailed information about the vehicle or task (like maintenance history, route info, etc.).
+Customizable layers: Toggle layers on/off based on vehicle status (active, inactive), tasks (completed, pending), or other criteria (e.g., trip length, rebalancing status).
+This way, the map acts as an interactive interface, reflecting real-time data and responding to the API calls in a visually informative and intuitive manner.

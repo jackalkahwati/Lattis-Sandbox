@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
-from models import User, ActivityLog, db
+from models import User
+from extensions import db
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 
@@ -57,24 +58,59 @@ def manage_access():
         db.session.rollback()
         return jsonify({'error': 'Database error', 'details': str(e)}), 500
 
-@bp.route('/activity', methods=['GET'])
-def get_user_activity():
+# The activity logging functionality has been removed as we don't have an ActivityLog model
+# If you want to implement this feature in the future, you'll need to create an ActivityLog model
+# and update this file accordingly
+
+@bp.route('/', methods=['GET'])
+def get_users():
     """
-    View logs of user activities
+    Get all users
     ---
     responses:
       200:
-        description: A list of user activities
+        description: A list of all users
       500:
         description: Internal server error
     """
     try:
-        activities = ActivityLog.query.all()
+        users = User.query.all()
         return jsonify([{
-            'id': a.id,
-            'user_id': a.user_id,
-            'action': a.action,
-            'timestamp': a.timestamp.isoformat()
-        } for a in activities])
+            'id': u.id,
+            'username': u.username,
+            'email': u.email,
+            'created_at': u.created_at.isoformat()
+        } for u in users])
+    except SQLAlchemyError as e:
+        return jsonify({'error': 'Database error', 'details': str(e)}), 500
+
+@bp.route('/<int:user_id>', methods=['GET'])
+def get_user(user_id):
+    """
+    Get a specific user
+    ---
+    parameters:
+      - name: user_id
+        in: path
+        required: true
+        type: integer
+    responses:
+      200:
+        description: User details
+      404:
+        description: User not found
+      500:
+        description: Internal server error
+    """
+    try:
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        return jsonify({
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'created_at': user.created_at.isoformat()
+        })
     except SQLAlchemyError as e:
         return jsonify({'error': 'Database error', 'details': str(e)}), 500

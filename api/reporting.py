@@ -1,79 +1,102 @@
-from flask import Blueprint, jsonify
-from models import Report, MaintenanceTask
+from flask import Blueprint, jsonify, request
+from models import Report, Vehicle, Trip
+from extensions import db
 from sqlalchemy.exc import SQLAlchemyError
+import logging
+from marshmallow import Schema, fields, ValidationError
 from datetime import datetime, timedelta
 
-bp = Blueprint('reporting', __name__, url_prefix='/reports')
+bp = Blueprint('reporting', __name__, url_prefix='/api/v1')
 
-@bp.route('/usage', methods=['GET'])
-def get_usage_report():
-    """
-    Retrieve fleet usage data
-    ---
-    responses:
-      200:
-        description: Fleet usage report
-      404:
-        description: No usage report available
-      500:
-        description: Internal server error
-    """
-    try:
-        report = Report.query.filter_by(type='usage').order_by(Report.created_at.desc()).first()
-        if report:
-            return jsonify({
-                'id': report.id,
-                'type': report.type,
-                'data': report.data,
-                'created_at': report.created_at.isoformat()
-            })
-        else:
-            return jsonify({'error': 'No usage report available'}), 404
-    except SQLAlchemyError as e:
-        return jsonify({'error': 'Database error', 'details': str(e)}), 500
+logging.basicConfig(level=logging.ERROR)
+logger = logging.getLogger(__name__)
 
-@bp.route('/maintenance', methods=['GET'])
-def get_maintenance_report():
-    """
-    Analyze maintenance actions and downtime
-    ---
-    responses:
-      200:
-        description: Maintenance report with actions, downtime analysis, and history
-      500:
-        description: Internal server error
-    """
+class ReportSchema(Schema):
+    title = fields.String(required=True)
+    content = fields.Dict(required=True)
+
+@bp.route('/analytics/usage', methods=['GET'])
+def get_usage_analytics():
     try:
-        # Get maintenance tasks for the last 30 days
+        # Get usage data for the last 30 days
         thirty_days_ago = datetime.utcnow() - timedelta(days=30)
-        tasks = MaintenanceTask.query.filter(MaintenanceTask.created_at >= thirty_days_ago).all()
+        trips = Trip.query.filter(Trip.start_time >= thirty_days_ago).all()
+        vehicles = Vehicle.query.all()
 
-        total_tasks = len(tasks)
-        completed_tasks = sum(1 for task in tasks if task.status == 'Completed')
-        pending_tasks = sum(1 for task in tasks if task.status == 'Pending')
-        in_progress_tasks = total_tasks - completed_tasks - pending_tasks
+        total_trips = len(trips)
+        total_distance = sum((trip.end_time - trip.start_time).total_seconds() / 3600 for trip in trips if trip.end_time)  # Assuming 1 hour = 1 distance unit
+        avg_trip_duration = sum((trip.end_time - trip.start_time).total_seconds() for trip in trips if trip.end_time) / total_trips if total_trips > 0 else 0
 
-        # Calculate average downtime (assuming each task takes 2 hours on average)
-        total_downtime = sum(2 for task in tasks if task.status == 'Completed')
-        avg_downtime = total_downtime / completed_tasks if completed_tasks > 0 else 0
+        vehicle_usage = {}
+        for vehicle in vehicles:
+            vehicle_trips = [trip for trip in trips if trip.vehicle_id == vehicle.id]
+            vehicle_usage[vehicle.id] = {
+                'total_trips': len(vehicle_trips),
+                'total_distance': sum((trip.end_time - trip.start_time).total_seconds() / 3600 for trip in vehicle_trips if trip.end_time),
+                'utilization_rate': len(vehicle_trips) / total_trips if total_trips > 0 else 0
+            }
 
-        # Generate maintenance history data
-        maintenance_history = {}
-        for i in range(30):
-            date = (datetime.utcnow() - timedelta(days=i)).date()
-            maintenance_history[date.isoformat()] = sum(1 for task in tasks if task.created_at.date() == date)
-
-        report_data = {
-            'total_tasks': total_tasks,
-            'completed_tasks': completed_tasks,
-            'pending_tasks': pending_tasks,
-            'in_progress_tasks': in_progress_tasks,
-            'average_downtime_hours': round(avg_downtime, 2),
-            'total_downtime_hours': total_downtime,
-            'period': '30 days',
-            'maintenance_history': maintenance_history
+        usage_data = {
+            'total_trips': total_trips,
+            'total_distance': total_distance,
+            'avg_trip_duration': avg_trip_duration,
+            'vehicle_usage': vehicle_usage,
+            'period': '30 days'
         }
 
-        return jsonify(report_data)
+        return jsonify(usage_data), 200
     except SQLAlchemyError as e:
-        return jsonify({'error': 'Database error', 'details': str(e)}), 500
+        logger.error(f"Database error in get_usage_analytics: {str(e)}")
+        return jsonify({'error': 'An error occurred while fetching usage analytics'}), 500
+
+@bp.route('/reports', methods=['POST'])
+def generate_report():
+    try:
+        schema = ReportSchema()
+        data = schema.load(request.json)
+    except ValidationError as err:
+        return jsonify({"error": "Invalid input", "details": err.messages}), 400
+
+    try:
+        new_report = Report(
+            title=data['title'],
+            content=str(data['content']),  # Convert dict to string for storage
+            created_at=datetime.utcnow()
+        )
+        db.session.add(new_report)
+        db.session.commit()
+        return jsonify({"message": "Report generated successfully", "report_id": new_report.id}), 201
+    except SQLAlchemyError as e:
+        logger.error(f"Database error in generate_report: {str(e)}")
+        db.session.rollback()
+        return jsonify({"error": "An error occurred while generating the report"}), 500
+
+@bp.route('/reports/<int:report_id>', methods=['GET'])
+def get_report(report_id):
+    try:
+        report = Report.query.get(report_id)
+        if not report:
+            return jsonify({"error": "Report not found"}), 404
+
+        return jsonify({
+            "id": report.id,
+            "title": report.title,
+            "content": eval(report.content),  # Convert string back to dict
+            "created_at": report.created_at.isoformat()
+        }), 200
+    except SQLAlchemyError as e:
+        logger.error(f"Database error in get_report: {str(e)}")
+        return jsonify({"error": "An error occurred while fetching the report"}), 500
+
+@bp.route('/reports', methods=['GET'])
+def list_reports():
+    try:
+        reports = Report.query.all()
+        return jsonify([{
+            "id": report.id,
+            "title": report.title,
+            "created_at": report.created_at.isoformat()
+        } for report in reports]), 200
+    except SQLAlchemyError as e:
+        logger.error(f"Database error in list_reports: {str(e)}")
+        return jsonify({"error": "An error occurred while fetching reports"}), 500
